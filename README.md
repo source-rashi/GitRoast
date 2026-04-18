@@ -51,10 +51,10 @@ Five personality modes: **Comedian**, **YC Co-Founder**, **Senior Dev**, **Zen M
 | 🎭 **5 Personality Modes** | ✅ Live | Comedian, YC, Senior Dev, Zen, Stranger |
 | 🗂️ **Session Caching** | ✅ Live | Profiles cached for instant follow-ups |
 | 🔨 **Code Quality Analysis** | ✅ Live | pylint + radon complexity + AST — secrets, nesting, bare excepts, missing tests |
-| 🧠 **Idea Stress Tester** | 🔜 Phase 3 | Multi-agent debate: Believer vs Destroyer vs Judge |
-| 🏗️ **Project Scaffolder** | 🔜 Phase 4 | Full stack from an idea in seconds |
+| 🧠 **Idea Stress Tester** | ✅ Live | Three AI agents debate your idea in real time. The Believer finds every reason it could work. The Destroyer finds every reason it will fail. The Judge delivers a verdict with a refined version of your idea and concrete next steps. No more building in an echo chamber. |
+| 🏗️ **Project Scaffolder** | ✅ Live | Survived the debate? GitRoast turns your idea into a real starter project — complete folder structure, tech stack recommendation (free tools only), core starter files with actual runnable code, and a week-by-week 4-week roadmap. Optionally creates the GitHub repo for you. |
+| 💬 **Inline Code Comments** | ✅ Live | GitRoast drops color-coded review comments directly into your open VS Code files, with severity decorations (error/warning/info/praise) and Problems panel integration. |
 | 🕵️ **Competitor Researcher** | 🔜 Phase 4 | GitHub + web intelligence |
-| 🖥️ **VS Code Extension** | 🔜 Phase 5 | Sidebar, chat panel, inline comments |
 
 ---
 
@@ -204,27 +204,30 @@ gitroast/
 ├── .github/workflows/ci.yml       # GitHub Actions CI
 ├── mcp_server/
 │   ├── server.py                  # MCP entry point — 8 registered tools
-│   ├── orchestrator.py            # Session cache, conversation history
+│   ├── orchestrator.py            # Session cache, conversation history, debate context
 │   ├── tools/
 │   │   ├── github_scraper.py      # ★ Core engine — full GitHub analysis
 │   │   ├── code_analyzer.py       # ★ Phase 2 LIVE — pylint + radon + AST
-│   │   ├── idea_debater.py        # Phase 3 stub
-│   │   ├── scaffolder.py          # Phase 4 stub
+│   │   ├── idea_debater.py        # ★ Phase 3 LIVE — multi-agent debate system
+│   │   ├── scaffolder.py          # ★ Phase 3 LIVE — project scaffolding engine
 │   │   └── competitor_researcher.py  # Phase 4 stub
 │   ├── personality/
 │   │   └── engine.py              # 5 persona wrappers
 │   └── utils/
 │       └── helpers.py             # Formatting utilities
-├── vscode_extension/              # VS Code sidebar skeleton (Phase 5)
+├── vscode_extension/              # VS Code sidebar + inline comments
 │   ├── src/
-│   │   ├── extension.ts           # Extension entry + 4 commands
+│   │   ├── extension.ts           # Extension entry + 6 commands
 │   │   ├── sidebar.ts             # Dark-themed WebView sidebar
-│   │   ├── chat_panel.ts          # Phase 5 stub
-│   │   └── inline_comments.ts     # Phase 5 stub
+│   │   ├── chat_panel.ts          # Chat panel
+│   │   └── inline_comments.ts     # ★ Phase 3 LIVE — inline code review comments
 │   └── package.json
 ├── tests/
 │   ├── test_github_scraper.py     # 7 tests, all mocked
-│   └── test_personality.py        # 9 tests
+│   ├── test_personality.py        # 9 tests
+│   ├── test_code_analyzer.py      # Phase 2 tests
+│   ├── test_idea_debater.py       # ★ Phase 3 — 6 tests
+│   └── test_scaffolder.py         # ★ Phase 3 — 7 tests
 ├── .env.example                   # Template — copy to .env
 ├── requirements.txt
 └── pyproject.toml
@@ -284,8 +287,8 @@ python -m mcp_server.server
 | `ask_followup` | 1 ✅ | `question` | Follow-up without re-fetch |
 | `clear_session` | 1 ✅ | — | Clear cache + history |
 | `analyze_code_quality` | 2 ✅ | `username`, `personality`, `max_repos` | Static analysis — pylint, radon, AST |
-| `stress_test_idea` | 3 🔜 | `idea` | Multi-agent debate |
-| `scaffold_project` | 4 🔜 | `idea` | Full project from idea |
+| `stress_test_idea` | 3 ✅ | `idea`, `context`, `personality` | Multi-agent debate (Believer/Destroyer/Judge) |
+| `scaffold_project` | 3 ✅ | `idea`, `create_repo`, `personality` | Full project scaffold + optional GitHub repo |
 | `research_competitors` | 4 🔜 | `idea` | Market intelligence |
 
 ---
@@ -294,9 +297,56 @@ python -m mcp_server.server
 
 - [x] **Phase 1** — GitHub scraper, roast engine, MCP server, 5 personalities, VS Code skeleton
 - [x] **Phase 2** — Code quality analyzer ✅ (pylint + radon + AST, scored 1-10 per repo; VS Code extension UI)
-- [ ] **Phase 3** — Multi-agent idea stress tester (Believer vs Destroyer vs Judge)
-- [ ] **Phase 4** — Project scaffolder + competitor researcher
-- [ ] **Phase 5** — Full VS Code extension: chat panel, inline comments, real-time roasting
+- [x] **Phase 3** — Idea Stress Tester + Project Scaffolder ✅
+- [ ] **Phase 4** — Competitor researcher + advanced scaffolding
+- [ ] **Phase 5** — Full VS Code extension: real-time roasting, deeper AI integration
+
+---
+
+## 🎭 The Debate Arena
+
+GitRoast's **Idea Stress Tester** is a 3-agent multi-AI debate system. You pitch your idea. Three distinct agents argue it to death.
+
+```
+User pitches idea
+      ↓
+🟢 Agent 1: The Believer   → "Here's every reason this could WIN"
+🔴 Agent 2: The Destroyer  → "Here's every reason this will FAIL"
+      ↓
+⚖️  Agent 3: The Judge     → Verdict + Refined Idea + Next Steps
+```
+
+**Sample output:**
+
+```
+## 🟢 The Case FOR: "AI-powered todo app"
+### The Unfair Advantage
+The $47B productivity market hasn't seen a tool that learns
+your actual work patterns — not just stores your tasks.
+
+Confidence Score: 8/10
+
+---
+
+## 🔴 The Case AGAINST: "AI-powered todo app"
+### The Graveyard
+Todoist, Any.do, Things 3 — all profitable, all deep-moated.
+"AI" doesn't help you finish the tasks on the list.
+
+Confidence Score: 7/10
+
+---
+
+## ⚖️ The Verdict: VALIDATE FIRST
+The Destroyer won on market saturation, but missed the B2B angle.
+Refined idea: AI that integrates with Jira/Linear to auto-prioritize
+from real engineering tickets, not a blank list.
+
+Next Steps:
+1. Interview 10 engineering managers this week
+2. Build a no-code demo in Notion
+3. Measure if they'd pay $20/seat
+```
 
 ---
 
