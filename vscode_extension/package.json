@@ -36,6 +36,16 @@
         "command": "gitroast.openChat",
         "title": "GitRoast: Open Chat Panel",
         "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "gitroast.addInlineComments",
+        "title": "GitRoast: Add Inline Code Comments",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "gitroast.clearInlineComments",
+        "title": "GitRoast: Clear Inline Comments",
+        "icon": "$(clear-all)"
       }
     ],
     "viewsContainers": {

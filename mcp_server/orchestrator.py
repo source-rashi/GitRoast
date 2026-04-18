@@ -8,11 +8,14 @@ Handles multi-turn conversation history for Groq.
 Max history: 20 messages (trims oldest to avoid token overflow)
 """
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from loguru import logger
 
 from mcp_server.tools.github_scraper import DeveloperProfile
 from mcp_server.personality.engine import PersonalityEngine
+
+if TYPE_CHECKING:
+    from mcp_server.tools.idea_debater import DebateResult
 
 MAX_HISTORY_LENGTH = 20
 
@@ -26,6 +29,7 @@ class GitRoastOrchestrator:
         self.current_personality: str = "comedian"
         self.conversation_history: list[dict] = []
         self.current_username: Optional[str] = None
+        self.last_debate_result: Optional["DebateResult"] = None
         logger.info("GitRoastOrchestrator initialized.")
 
     # ------------------------------------------------------------------
