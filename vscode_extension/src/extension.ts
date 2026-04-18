@@ -4,6 +4,7 @@ import * as cp from 'child_process';
 import * as readline from 'readline';
 import { GitRoastSidebarProvider } from './sidebar';
 import { ChatPanel } from './chat_panel';
+import { InlineCommentManager, registerInlineCommentCommands } from './inline_comments';
 
 // ---------------------------------------------------------------------------
 // MCP Client — communicates with the Python MCP server via stdio
@@ -161,6 +162,10 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('gitroastView', sidebarProvider)
     );
+
+    // Register inline comment manager
+    const inlineCommentManager = new InlineCommentManager(context);
+    registerInlineCommentCommands(context, inlineCommentManager);
 
     // ----------------------------------------------------------------
     // Command: Analyze GitHub Profile
