@@ -1,15 +1,17 @@
 """
 GitRoast — MCP Server Entry Point
 =====================================
-Exposes 5 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
+Exposes 7 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
 Communicates via stdio — the standard MCP protocol.
 
 Tools:
   1. analyze_developer      — Full GitHub profile roast (Phase 1, LIVE)
   2. analyze_code_quality   — Real static analysis: pylint, radon, AST (Phase 2, LIVE)
-  3. stress_test_idea        — Multi-agent idea debate (Phase 3, stub)
-  4. scaffold_project        — Project scaffolding (Phase 4, stub)
+  3. stress_test_idea        — Multi-agent idea debate (Phase 3, LIVE)
+  4. scaffold_project        — Project scaffolding (Phase 3, LIVE)
   5. research_competitors    — Competitor intelligence (Phase 4, stub)
+  6. set_personality         — Switch roast persona
+  7. ask_followup            — Follow-up questions without re-fetch
 
 LLM: Groq (free, no credit card, llama3-70b-8192)
 """
@@ -28,11 +30,13 @@ from rich.console import Console
 
 from mcp_server.tools.github_scraper import GitHubScraper
 from mcp_server.tools.code_analyzer import CodeAnalyzer
+from mcp_server.tools.idea_debater import IdeaDebater, DebateResult
+from mcp_server.tools.scaffolder import ProjectScaffolder, ScaffoldResult
 from mcp_server.personality.engine import PersonalityEngine
 from mcp_server.orchestrator import GitRoastOrchestrator
 
 # ---------------------------------------------------------------------------
-# System prompt
+# System prompts
 # ---------------------------------------------------------------------------
 
 ROAST_SYSTEM_PROMPT = """You are GitRoast — the most brutally honest, data-driven developer roaster on the internet.
@@ -120,7 +124,6 @@ async def handle_analyze_developer(
 
     profile = await orchestrator.get_or_fetch_profile(username, scraper)
 
-    # Build a rich prompt with all real data
     top_lang_str = (
         ", ".join(f"{l['language']} ({l['percentage']}%)" for l in profile.top_languages)
         if profile.top_languages
@@ -180,7 +183,6 @@ Personality mode: {personality}
         response_text = response.choices[0].message.content
     except Exception as exc:
         logger.warning(f"Groq API call failed, falling back to raw ammunition: {exc}")
-        # Fallback: format raw ammunition as markdown
         lines = [
             f"## 🔥 Roast: {profile.username}",
             "",
@@ -215,7 +217,6 @@ async def handle_analyze_code_quality(
 
     result = await analyzer.analyze_developer_repos(username, max_repos)
 
-    # Build prompt
     repo_summaries = []
     for r in result.repos_analyzed:
         repo_summaries.append(
@@ -276,6 +277,82 @@ async def handle_followup(arguments: dict, orchestrator: GitRoastOrchestrator) -
     return await orchestrator.answer_followup(question)
 
 
+async def handle_stress_test_idea(
+    arguments: dict,
+    debater: IdeaDebater,
+    orchestrator: GitRoastOrchestrator,
+    engine: PersonalityEngine,
+    groq_client: Groq,
+) -> str:
+    """Run the multi-agent debate to stress test a startup or project idea."""
+    idea: str = arguments.get("idea", "").strip()
+    context: str = arguments.get("context", "")
+    personality: str = arguments.get("personality", "yc_founder")
+
+    if len(idea) < 10:
+        return "❌ Please describe your idea in at least 10 characters."
+
+    engine.validate_personality(personality)
+
+    try:
+        result = await debater.run_debate(idea, context, personality)
+        formatted_output = debater.format_debate_for_display(result)
+        # Store debate result so scaffolder can use it for context
+        orchestrator.last_debate_result = result
+        return engine.wrap_response(formatted_output, personality)
+    except Exception as exc:
+        logger.exception(f"Idea stress test failed: {exc}")
+        return (
+            f"❌ The debate arena caught fire: {exc}\n\n"
+            "Please check your GROQ_API_KEY and try again. "
+            "Free tier: console.groq.com"
+        )
+
+
+async def handle_scaffold_project(
+    arguments: dict,
+    scaffolder: ProjectScaffolder,
+    orchestrator: GitRoastOrchestrator,
+    engine: PersonalityEngine,
+    groq_client: Groq,
+) -> str:
+    """Turn an idea into a complete starter project."""
+    idea: str = arguments.get("idea", "").strip()
+    personality: str = arguments.get("personality", "yc_founder")
+    create_repo: bool = bool(arguments.get("create_repo", False))
+
+    if not idea:
+        return "❌ Please provide a project idea."
+
+    engine.validate_personality(personality)
+
+    # Pass debate context if available
+    debate_result_text: str | None = None
+    if orchestrator.last_debate_result:
+        debate_result_text = orchestrator.last_debate_result.verdict.verdict_reasoning
+
+    try:
+        result = await scaffolder.scaffold(idea, debate_result_text, personality)
+
+        if create_repo:
+            repo_url = await scaffolder.create_github_repo(
+                result.project_name,
+                result.project_description,
+                result.files,
+            )
+            if repo_url:
+                result = result.model_copy(update={"github_repo_url": repo_url})
+
+        formatted_output = scaffolder.format_scaffold_for_display(result)
+        return engine.wrap_response(formatted_output, personality)
+    except Exception as exc:
+        logger.exception(f"Scaffold failed: {exc}")
+        return (
+            f"❌ Scaffolding failed: {exc}\n\n"
+            "Please check your GROQ_API_KEY and try again."
+        )
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -300,6 +377,8 @@ async def main():
     analyzer = CodeAnalyzer()
     engine = PersonalityEngine()
     orchestrator = GitRoastOrchestrator(groq_client)
+    debater = IdeaDebater(groq_client)
+    scaffolder = ProjectScaffolder(groq_client, github_token=os.getenv("GITHUB_TOKEN"))
 
     # Initialize MCP server
     server = Server("gitroast")
@@ -402,15 +481,26 @@ async def main():
             types.Tool(
                 name="stress_test_idea",
                 description=(
-                    "Run a multi-agent debate to stress test a startup or project idea. "
-                    "[Coming in Phase 3]"
+                    "Run a multi-agent debate to stress test your startup or project idea. "
+                    "Three AI agents debate it: The Believer builds the strongest case FOR it, "
+                    "The Destroyer finds every flaw, The Judge delivers a verdict with a refined "
+                    "version of your idea and concrete next steps."
                 ),
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "idea": {
                             "type": "string",
-                            "description": "Your startup or project idea",
+                            "description": "Your startup or project idea — describe it in 1-3 sentences",
+                        },
+                        "context": {
+                            "type": "string",
+                            "description": "Optional: your background, target users, or any constraints",
+                        },
+                        "personality": {
+                            "type": "string",
+                            "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+                            "default": "yc_founder",
                         },
                     },
                     "required": ["idea"],
@@ -418,13 +508,30 @@ async def main():
             ),
             types.Tool(
                 name="scaffold_project",
-                description="Scaffold a complete project structure from an idea. [Coming in Phase 4]",
+                description=(
+                    "Turn your idea into a complete starter project with folder structure, "
+                    "tech stack, core files, and a 4-week roadmap. "
+                    "Run stress_test_idea first for best results."
+                ),
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "idea": {
                             "type": "string",
-                            "description": "Your project idea",
+                            "description": "The project idea to scaffold",
+                        },
+                        "create_repo": {
+                            "type": "boolean",
+                            "description": (
+                                "Create an actual GitHub repo with the scaffold "
+                                "(requires repo scope on your GitHub PAT)"
+                            ),
+                            "default": False,
+                        },
+                        "personality": {
+                            "type": "string",
+                            "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+                            "default": "yc_founder",
                         },
                     },
                     "required": ["idea"],
@@ -468,9 +575,13 @@ async def main():
                     arguments, analyzer, orchestrator, engine, groq_client
                 )
             elif name == "stress_test_idea":
-                result = "🧠 Idea stress tester (multi-agent debate) coming in Phase 3."
+                result = await handle_stress_test_idea(
+                    arguments, debater, orchestrator, engine, groq_client
+                )
             elif name == "scaffold_project":
-                result = "🏗️ Project scaffolder coming in Phase 4."
+                result = await handle_scaffold_project(
+                    arguments, scaffolder, orchestrator, engine, groq_client
+                )
             elif name == "research_competitors":
                 result = "🕵️ Competitor researcher coming in Phase 4."
             else:
@@ -485,8 +596,9 @@ async def main():
     # Startup banner
     # ------------------------------------------------------------------
     console.print(
-        "\n[bold red]🔥 GitRoast MCP Server v0.1.0 — Online[/bold red]\n"
+        "\n[bold red]🔥 GitRoast MCP Server v0.3.0 — Online[/bold red]\n"
         "[dim]LLM: Groq (llama3-70b-8192) — Free tier[/dim]\n"
+        "[bold green]Phase 3 LIVE: Idea Stress Tester + Project Scaffolder[/bold green]\n"
         "[dim]Waiting for connections via stdio...[/dim]\n"
     )
 
