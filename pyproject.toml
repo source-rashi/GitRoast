@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "gitroast"
+version = "0.1.0"
+description = "AI-powered developer intelligence MCP server — GitRoast"
+authors = [{ name = "GitRoast", email = "gitroast@example.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["mcp", "github", "ai", "developer-tools", "llm", "roast"]
+
+[project.scripts]
+gitroast = "mcp_server.server:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
