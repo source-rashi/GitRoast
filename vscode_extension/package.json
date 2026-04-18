@@ -1,0 +1,82 @@
+{
+  "name": "gitroast",
+  "displayName": "GitRoast — AI Developer Intelligence",
+  "description": "AI-powered developer roasting, code analysis, and idea stress-testing via MCP",
+  "version": "0.1.0",
+  "publisher": "gitroast",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["AI", "Other"],
+  "keywords": ["github", "ai", "roast", "mcp", "developer-tools", "code-review"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "icon": "media/logo.png",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitroast.analyzeProfile",
+        "title": "GitRoast: Analyze GitHub Profile",
+        "icon": "$(github)"
+      },
+      {
+        "command": "gitroast.setPersonality",
+        "title": "GitRoast: Switch Personality Mode",
+        "icon": "$(smiley)"
+      },
+      {
+        "command": "gitroast.clearSession",
+        "title": "GitRoast: Clear Session",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "gitroast.openChat",
+        "title": "GitRoast: Open Chat Panel",
+        "icon": "$(comment-discussion)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gitroast-sidebar",
+          "title": "GitRoast",
+          "icon": "$(flame)"
+        }
+      ]
+    },
+    "views": {
+      "gitroast-sidebar": [
+        {
+          "id": "gitroastView",
+          "name": "GitRoast",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "GitRoast",
+      "properties": {
+        "gitroast.mcpServerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to your GitRoast MCP server directory"
+        },
+        "gitroast.defaultPersonality": {
+          "type": "string",
+          "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+          "default": "comedian",
+          "description": "Default roast personality"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "18.x",
+    "typescript": "^5.3.0"
+  }
+}
