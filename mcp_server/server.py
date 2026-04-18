@@ -6,7 +6,7 @@ Communicates via stdio — the standard MCP protocol.
 
 Tools:
   1. analyze_developer      — Full GitHub profile roast (Phase 1, LIVE)
-  2. analyze_code_quality   — Static code analysis (Phase 2, stub)
+  2. analyze_code_quality   — Real static analysis: pylint, radon, AST (Phase 2, LIVE)
   3. stress_test_idea        — Multi-agent idea debate (Phase 3, stub)
   4. scaffold_project        — Project scaffolding (Phase 4, stub)
   5. research_competitors    — Competitor intelligence (Phase 4, stub)
@@ -27,6 +27,7 @@ from mcp import types
 from rich.console import Console
 
 from mcp_server.tools.github_scraper import GitHubScraper
+from mcp_server.tools.code_analyzer import CodeAnalyzer
 from mcp_server.personality.engine import PersonalityEngine
 from mcp_server.orchestrator import GitRoastOrchestrator
 
@@ -66,6 +67,35 @@ Rules:
 - Keep total length under 600 words
 - Match the personality mode provided exactly
 - End constructively — we build people up after tearing them down"""
+
+
+CODE_ROAST_SYSTEM_PROMPT = """You are GitRoast analyzing real static analysis results from a developer's codebase.
+
+You have REAL DATA from pylint, radon complexity analysis, and AST inspection.
+Every point you make MUST reference a specific file, score, or finding from the data.
+
+Format your response EXACTLY like this:
+
+## 🔬 Code Quality Report
+
+## 💣 What The Analysis Found
+[5-7 specific findings with file names, scores, and line numbers where available]
+[Use the roast_ammunition list — expand each into a full point with context]
+
+## 🏆 What's Actually Good
+[3-4 genuine strengths from the praise_ammunition list]
+
+## 🔧 Fix This Week
+[Top 3 highest-impact fixes, ordered by severity — be specific about which file and what to do]
+
+## ☠️ The One Thing To Fix RIGHT NOW
+[The single most critical finding — hardcoded secret, or highest complexity function, or worst file]
+
+Rules:
+- NEVER make up findings — only use what's in the data
+- Reference specific filenames when available
+- Be direct about severity without being demoralizing
+- Match the personality mode provided"""
 
 
 # ---------------------------------------------------------------------------
@@ -166,6 +196,78 @@ Personality mode: {personality}
     return engine.wrap_response(response_text, personality)
 
 
+async def handle_analyze_code_quality(
+    arguments: dict,
+    analyzer: CodeAnalyzer,
+    orchestrator: GitRoastOrchestrator,
+    engine: PersonalityEngine,
+    groq_client: Groq,
+) -> str:
+    """Run real static analysis on a developer's GitHub repos."""
+    username: str = arguments.get("username", "").strip()
+    personality: str = arguments.get("personality", "senior_dev")
+    max_repos: int = min(int(arguments.get("max_repos", 3)), 5)
+
+    if not username:
+        return "❌ Please provide a GitHub username."
+
+    engine.validate_personality(personality)
+
+    result = await analyzer.analyze_developer_repos(username, max_repos)
+
+    # Build prompt
+    repo_summaries = []
+    for r in result.repos_analyzed:
+        repo_summaries.append(
+            f"- {r.repo_name}: score {r.overall_score}/10, "
+            f"{r.total_issues} issues ({r.critical_issues} critical), "
+            f"test coverage: {'yes' if r.test_coverage_estimate > 0 else 'none'}"
+        )
+
+    roast_str = "\n".join(f"{i+1}. {line}" for i, line in enumerate(result.roast_ammunition)) or "No roast ammo."
+    praise_str = "\n".join(f"{i+1}. {line}" for i, line in enumerate(result.praise_ammunition)) or "No praise ammo."
+
+    prompt = f"""Code Quality Analysis for GitHub user: {username}
+
+OVERALL GRADE: {result.overall_grade}
+WORST FILE: {result.worst_file or 'N/A'}
+MOST COMMON ISSUE: {result.most_common_issue or 'N/A'}
+TOTAL SECRETS FOUND: {result.total_secrets_found}
+TOTAL TODOS: {result.total_todos}
+
+REPO SCORES:
+{chr(10).join(repo_summaries)}
+
+ROAST AMMUNITION:
+{roast_str}
+
+PRAISE AMMUNITION:
+{praise_str}
+
+Personality mode: {personality}
+"""
+
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {"role": "system", "content": CODE_ROAST_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=1000,
+            temperature=0.8,
+        )
+        response_text = response.choices[0].message.content
+    except Exception as exc:
+        logger.warning(f"Groq failed for code quality, using fallback: {exc}")
+        lines = [f"## 🔬 Code Quality: {username} — Grade {result.overall_grade}", ""]
+        for line in result.roast_ammunition:
+            lines.append(f"- {line}")
+        response_text = "\n".join(lines)
+
+    return engine.wrap_response(response_text, personality)
+
+
 async def handle_followup(arguments: dict, orchestrator: GitRoastOrchestrator) -> str:
     """Answer a follow-up question about the last analyzed developer."""
     question = arguments.get("question", "").strip()
@@ -195,6 +297,7 @@ async def main():
     # Initialize components
     groq_client = Groq(api_key=groq_api_key)
     scraper = GitHubScraper()
+    analyzer = CodeAnalyzer()
     engine = PersonalityEngine()
     orchestrator = GitRoastOrchestrator(groq_client)
 
@@ -269,16 +372,31 @@ async def main():
             ),
             types.Tool(
                 name="analyze_code_quality",
-                description="Analyze code quality with static analysis. [Coming in Phase 2]",
+                description=(
+                    "Analyze code quality of a developer's GitHub repos using real static analysis "
+                    "(pylint, radon complexity, AST inspection). Detects secrets, complexity issues, "
+                    "missing tests, and more."
+                ),
                 inputSchema={
                     "type": "object",
                     "properties": {
-                        "repo_url": {
+                        "username": {
                             "type": "string",
-                            "description": "GitHub repository URL to analyze",
+                            "description": "GitHub username whose repos to analyze",
+                        },
+                        "personality": {
+                            "type": "string",
+                            "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+                            "default": "senior_dev",
+                            "description": "Roast personality mode",
+                        },
+                        "max_repos": {
+                            "type": "number",
+                            "description": "Number of repos to analyze (1-5, default 3)",
+                            "default": 3,
                         },
                     },
-                    "required": ["repo_url"],
+                    "required": ["username"],
                 },
             ),
             types.Tool(
@@ -346,7 +464,9 @@ async def main():
             elif name == "clear_session":
                 result = orchestrator.clear_session()
             elif name == "analyze_code_quality":
-                result = "🔨 Code quality analyzer coming in Phase 2. Stay tuned."
+                result = await handle_analyze_code_quality(
+                    arguments, analyzer, orchestrator, engine, groq_client
+                )
             elif name == "stress_test_idea":
                 result = "🧠 Idea stress tester (multi-agent debate) coming in Phase 3."
             elif name == "scaffold_project":

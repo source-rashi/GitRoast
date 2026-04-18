@@ -46,11 +46,11 @@ Five personality modes: **Comedian**, **YC Co-Founder**, **Senior Dev**, **Zen M
 | Feature | Status | Description |
 |---|---|---|
 | 🔍 **Deep GitHub Scraping** | ✅ Live | Repos, commits, PRs, issues, READMEs, languages |
-| 🔥 **AI Roast Generation** | ✅ Live | Groq-powered, personality-aware, data-grounded |
+| 🔥 **AI Roast Generation** | ✅ Live | Groq-powered, personality-aware, data-grounded. Now with **real static analysis** — pylint scores, cyclomatic complexity, hardcoded secret detection, and more. Every roast is backed by actual file-level findings. |
 | 💬 **Multi-turn Follow-ups** | ✅ Live | Ask questions without re-fetching GitHub |
 | 🎭 **5 Personality Modes** | ✅ Live | Comedian, YC, Senior Dev, Zen, Stranger |
 | 🗂️ **Session Caching** | ✅ Live | Profiles cached for instant follow-ups |
-| 🔨 **Code Quality Analysis** | 🔜 Phase 2 | pylint + radon + AST, scored 1-10 |
+| 🔨 **Code Quality Analysis** | ✅ Live | pylint + radon complexity + AST — secrets, nesting, bare excepts, missing tests |
 | 🧠 **Idea Stress Tester** | 🔜 Phase 3 | Multi-agent debate: Believer vs Destroyer vs Judge |
 | 🏗️ **Project Scaffolder** | 🔜 Phase 4 | Full stack from an idea in seconds |
 | 🕵️ **Competitor Researcher** | 🔜 Phase 4 | GitHub + web intelligence |
@@ -207,7 +207,7 @@ gitroast/
 │   ├── orchestrator.py            # Session cache, conversation history
 │   ├── tools/
 │   │   ├── github_scraper.py      # ★ Core engine — full GitHub analysis
-│   │   ├── code_analyzer.py       # Phase 2 stub
+│   │   ├── code_analyzer.py       # ★ Phase 2 LIVE — pylint + radon + AST
 │   │   ├── idea_debater.py        # Phase 3 stub
 │   │   ├── scaffolder.py          # Phase 4 stub
 │   │   └── competitor_researcher.py  # Phase 4 stub
@@ -283,7 +283,7 @@ python -m mcp_server.server
 | `set_personality` | 1 ✅ | `personality` | Switch roast mode |
 | `ask_followup` | 1 ✅ | `question` | Follow-up without re-fetch |
 | `clear_session` | 1 ✅ | — | Clear cache + history |
-| `analyze_code_quality` | 2 🔜 | `repo_url` | Static analysis, scored 1-10 |
+| `analyze_code_quality` | 2 ✅ | `username`, `personality`, `max_repos` | Static analysis — pylint, radon, AST |
 | `stress_test_idea` | 3 🔜 | `idea` | Multi-agent debate |
 | `scaffold_project` | 4 🔜 | `idea` | Full project from idea |
 | `research_competitors` | 4 🔜 | `idea` | Market intelligence |
@@ -293,7 +293,7 @@ python -m mcp_server.server
 ## 🗺️ Roadmap
 
 - [x] **Phase 1** — GitHub scraper, roast engine, MCP server, 5 personalities, VS Code skeleton
-- [ ] **Phase 2** — Code quality analyzer (pylint + radon + AST, scored 1-10 per repo)
+- [x] **Phase 2** — Code quality analyzer ✅ (pylint + radon + AST, scored 1-10 per repo; VS Code extension UI)
 - [ ] **Phase 3** — Multi-agent idea stress tester (Believer vs Destroyer vs Judge)
 - [ ] **Phase 4** — Project scaffolder + competitor researcher
 - [ ] **Phase 5** — Full VS Code extension: chat panel, inline comments, real-time roasting

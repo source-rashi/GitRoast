@@ -2,7 +2,7 @@
   "name": "gitroast",
   "displayName": "GitRoast — AI Developer Intelligence",
   "description": "AI-powered developer roasting, code analysis, and idea stress-testing via MCP",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "gitroast",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["AI", "Other"],
@@ -16,6 +16,11 @@
         "command": "gitroast.analyzeProfile",
         "title": "GitRoast: Analyze GitHub Profile",
         "icon": "$(github)"
+      },
+      {
+        "command": "gitroast.analyzeCodeQuality",
+        "title": "GitRoast: Analyze Code Quality",
+        "icon": "$(beaker)"
       },
       {
         "command": "gitroast.setPersonality",
