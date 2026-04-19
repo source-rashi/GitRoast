@@ -7,20 +7,99 @@ on:
     branches: [ main ]
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Python — lint + tests + coverage
+  # ---------------------------------------------------------------------------
   test:
+    name: Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run tests
-      run: pytest tests/ -v
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-cov
+
+      - name: Run tests with coverage
+        run: |
+          pytest tests/ -v \
+            --tb=short \
+            --cov=mcp_server \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-fail-under=60
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Python — import smoke test (no API keys needed)
+  # ---------------------------------------------------------------------------
+  smoke:
+    name: Import smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Verify all modules import cleanly
+        run: |
+          python -c "from mcp_server.tools.github_scraper import GitHubScraper; print('github_scraper OK')"
+          python -c "from mcp_server.tools.code_analyzer import CodeAnalyzer; print('code_analyzer OK')"
+          python -c "from mcp_server.tools.idea_debater import IdeaDebater; print('idea_debater OK')"
+          python -c "from mcp_server.tools.scaffolder import ProjectScaffolder; print('scaffolder OK')"
+          python -c "from mcp_server.tools.competitor_researcher import CompetitorResearcher; print('competitor_researcher OK')"
+          python -c "from mcp_server.personality.engine import PersonalityEngine; print('personality_engine OK')"
+          python -c "from mcp_server.orchestrator import GitRoastOrchestrator; print('orchestrator OK')"
+          echo "All imports OK"
+
+  # ---------------------------------------------------------------------------
+  # TypeScript — compile check
+  # ---------------------------------------------------------------------------
+  typescript:
+    name: TypeScript compile check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vscode_extension
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: vscode_extension/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile TypeScript
+        run: npm run compile
