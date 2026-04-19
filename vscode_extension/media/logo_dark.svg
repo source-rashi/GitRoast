@@ -1,0 +1,87 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#f7a128;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#f7c948;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="200" height="200" rx="40" ry="40" fill="url(#bgGrad)"/>
+
+  <!-- Outer glow ring -->
+  <rect width="200" height="200" rx="40" ry="40"
+        fill="none" stroke="#ff6b35" stroke-width="1.5" opacity="0.3"/>
+
+  <!-- Flame shape — main body -->
+  <path d="
+    M 100 155
+    C 70 155 48 135 48 112
+    C 48 95 58 82 65 72
+    C 68 67 70 62 68 55
+    C 72 62 74 68 72 76
+    C 78 68 82 56 80 44
+    C 86 58 87 68 84 78
+    C 90 68 93 54 92 42
+    C 98 56 99 68 96 80
+    C 103 68 107 54 106 40
+    C 113 55 113 68 109 80
+    C 116 70 121 56 118 42
+    C 126 60 124 76 118 88
+    C 128 80 134 68 132 54
+    C 140 72 138 90 130 102
+    C 142 96 148 82 146 66
+    C 154 86 150 108 140 120
+    C 148 116 153 104 151 90
+    C 158 108 155 128 145 140
+    C 138 152 120 160 100 160
+    Z
+  " fill="url(#flameGrad)" filter="url(#glow)"/>
+
+  <!-- Inner flame tip — brighter yellow core -->
+  <path d="
+    M 100 140
+    C 84 140 74 128 74 116
+    C 74 105 82 97 88 90
+    C 90 95 90 100 88 106
+    C 94 98 97 88 96 78
+    C 101 88 102 98 99 108
+    C 105 98 108 86 107 74
+    C 113 88 111 102 106 112
+    C 112 104 116 92 114 78
+    C 120 94 118 112 110 124
+    C 120 118 124 106 122 92
+    C 126 108 122 126 114 136
+    C 108 148 84 148 100 148
+    Z
+  " fill="#f7c948" opacity="0.7"/>
+
+  <!-- "GR" text -->
+  <text
+    x="100"
+    y="185"
+    font-family="'Arial Black', 'Arial', sans-serif"
+    font-size="22"
+    font-weight="900"
+    fill="#ffffff"
+    text-anchor="middle"
+    letter-spacing="3"
+  >GR</text>
+
+  <!-- Subtle sparkle dots -->
+  <circle cx="62" cy="88" r="2.5" fill="#f7c948" opacity="0.8"/>
+  <circle cx="138" cy="76" r="2" fill="#f7c948" opacity="0.6"/>
+  <circle cx="72" cy="118" r="1.5" fill="#ff6b35" opacity="0.5"/>
+</svg>

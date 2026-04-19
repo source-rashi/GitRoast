@@ -4,6 +4,9 @@ import { GitRoastMCPClient } from './extension';
 export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'gitroastView';
 
+    private _view?: vscode.WebviewView;
+    private _lastAction: { username: string; timestamp: number } | null = null;
+
     constructor(
         private readonly _extensionUri: vscode.Uri,
         private readonly _client: GitRoastMCPClient | null
@@ -14,6 +17,8 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken,
     ): void {
+        this._view = webviewView;
+
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [this._extensionUri],
@@ -25,15 +30,27 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage((message) => {
             switch (message.command) {
                 case 'roast':
+                    this._setLoading(true, `Roasting ${message.username}...`);
+                    this._lastAction = { username: message.username, timestamp: Date.now() };
                     vscode.commands.executeCommand('gitroast.analyzeProfile', {
                         username: message.username,
                         personality: message.personality,
+                    }).then(() => {
+                        this._setLoading(false, null, message.username);
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
                     });
                     break;
                 case 'analyze':
+                    this._setLoading(true, `Analyzing code for ${message.username}...`);
+                    this._lastAction = { username: message.username, timestamp: Date.now() };
                     vscode.commands.executeCommand('gitroast.analyzeCodeQuality', {
                         username: message.username,
                         maxRepos: Number(message.maxRepos) || 3,
+                    }).then(() => {
+                        this._setLoading(false, null, message.username);
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
                     });
                     break;
                 case 'openChat':
@@ -44,10 +61,46 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
                     webviewView.webview.postMessage({
                         type: 'status',
                         text: '🗑️ Session cleared. Ready to roast again.',
+                        isLoading: false,
                     });
                     break;
             }
         });
+    }
+
+    private _setLoading(loading: boolean, message: string | null, doneUsername?: string | null, errorMsg?: string): void {
+        if (!this._view) { return; }
+
+        if (loading) {
+            this._view.webview.postMessage({
+                type: 'loadingStart',
+                text: message,
+            });
+        } else if (errorMsg) {
+            this._view.webview.postMessage({
+                type: 'status',
+                text: `❌ Error: ${errorMsg}`,
+                isLoading: false,
+            });
+        } else {
+            const elapsed = this._lastAction
+                ? this._getRelativeTime(this._lastAction.timestamp)
+                : '';
+            this._view.webview.postMessage({
+                type: 'loadingDone',
+                text: `✅ Done — result opened in editor`,
+                lastInfo: doneUsername
+                    ? `Last roast: ${doneUsername} • ${elapsed}`
+                    : '',
+            });
+        }
+    }
+
+    private _getRelativeTime(ts: number): string {
+        const seconds = Math.floor((Date.now() - ts) / 1000);
+        if (seconds < 60) { return `${seconds} seconds ago`; }
+        const minutes = Math.floor(seconds / 60);
+        return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
     }
 
     private _getHtmlContent(): string {
@@ -68,16 +121,18 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       background: #1e1e1e;
       color: #cccccc;
-      padding: 16px;
+      padding: 14px;
       font-size: 13px;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ---- HEADER ---- */
     .header {
       text-align: center;
-      padding-bottom: 14px;
-      margin-bottom: 14px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
       border-bottom: 1px solid #333;
     }
 
@@ -112,6 +167,12 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       border-radius: 50%;
       background: ${statusColor};
       box-shadow: 0 0 4px ${statusColor}88;
+      animation: ${connected ? 'pulse 2s infinite' : 'none'};
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
     .status-label {
@@ -120,9 +181,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
 
     /* ---- SECTIONS ---- */
-    .section {
-      margin-bottom: 14px;
-    }
+    .section { margin-bottom: 12px; }
 
     label {
       display: block;
@@ -145,7 +204,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       border-radius: 5px;
       font-size: 12px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
       -webkit-appearance: none;
     }
 
@@ -153,12 +212,10 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     input[type="number"]:focus,
     select:focus {
       border-color: #ff6b35;
+      box-shadow: 0 0 0 2px #ff6b3520;
     }
 
-    select option {
-      background: #2d2d2d;
-      color: #cccccc;
-    }
+    select option { background: #2d2d2d; color: #cccccc; }
 
     /* ---- BUTTONS ---- */
     .btn {
@@ -169,22 +226,55 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
       letter-spacing: 0.2px;
+      position: relative;
+      overflow: hidden;
     }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: white;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    .btn:active::after { opacity: 0.08; }
 
     .btn-primary {
       background: linear-gradient(135deg, #ff6b35 0%, #f7c948 100%);
       color: #111;
+      box-shadow: 0 2px 8px #ff6b3540;
     }
+
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 12px #ff6b3550; }
 
     .btn-secondary {
       background: linear-gradient(135deg, #4a90e2 0%, #7b68ee 100%);
       color: #fff;
+      box-shadow: 0 2px 8px #4a90e240;
     }
 
-    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-secondary:hover { opacity: 0.92; transform: translateY(-1px); }
+
     .btn:active { transform: translateY(0); }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Shortcut hint */
+    .shortcut-hint {
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
 
     /* ---- SESSION ROW ---- */
     .btn-row {
@@ -208,25 +298,109 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     .btn-small:hover { background: #383838; border-color: #666; }
 
     /* ---- DIVIDER ---- */
-    .divider {
-      border: none;
-      border-top: 1px solid #333;
-      margin: 14px 0;
-    }
+    .divider { border: none; border-top: 1px solid #2a2a2a; margin: 12px 0; }
 
     /* ---- STATUS AREA ---- */
     .status-area {
-      background: #2d2d2d;
-      border: 1px solid #3a3a3a;
-      border-radius: 5px;
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 6px;
       padding: 10px 12px;
       font-size: 11px;
       color: #999;
       line-height: 1.6;
-      min-height: 40px;
+      min-height: 50px;
+      transition: border-color 0.2s;
     }
 
+    .status-area.loading { border-color: #ff6b3560; }
     .status-area .highlight { color: #ff6b35; font-weight: 600; }
+    .status-area .success { color: #4caf50; font-weight: 600; }
+
+    .last-action {
+      font-size: 10px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Animated dots for loading */
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.4s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
+    }
+
+    /* ---- CAPABILITIES SECTION ---- */
+    .capabilities {
+      margin-bottom: 12px;
+    }
+
+    .capabilities-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 6px 0;
+      user-select: none;
+    }
+
+    .capabilities-header span {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+    }
+
+    .capabilities-toggle {
+      font-size: 10px;
+      color: #555;
+      transition: transform 0.2s;
+    }
+
+    .capabilities-toggle.open { transform: rotate(180deg); }
+
+    .capabilities-list {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease;
+    }
+
+    .capabilities-list.open { max-height: 200px; }
+
+    .cap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .cap-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+    .cap-text { flex: 1; }
+    .cap-name { font-size: 11px; color: #ccc; font-weight: 600; }
+    .cap-desc { font-size: 10px; color: #555; margin-top: 1px; }
+
+    /* ---- FOOTER ---- */
+    .footer {
+      margin-top: auto;
+      padding-top: 10px;
+      text-align: center;
+      font-size: 10px;
+      color: #444;
+      border-top: 1px solid #2a2a2a;
+      letter-spacing: 0.3px;
+    }
+
+    .footer a { color: #555; text-decoration: none; }
+    .footer a:hover { color: #888; }
   </style>
 </head>
 <body>
@@ -266,6 +440,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   <div class="section">
     <button class="btn btn-primary" id="roastBtn">🔥 Roast This Dev</button>
+    <div class="shortcut-hint">Or use <kbd style="background:#2d2d2d;border:1px solid #444;border-radius:3px;padding:1px 4px;font-size:10px;">Ctrl+Shift+G</kbd> to analyze</div>
   </div>
 
   <hr class="divider" />
@@ -300,31 +475,107 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
   <div class="status-area" id="statusArea">
     Ready to roast. Enter a username above.
   </div>
+  <div class="last-action" id="lastAction"></div>
+
+  <hr class="divider" />
+
+  <!-- SECTION 5: Capabilities (collapsible) -->
+  <div class="capabilities">
+    <div class="capabilities-header" id="capHeader">
+      <span>What Can GitRoast Do?</span>
+      <span class="capabilities-toggle" id="capToggle">▼</span>
+    </div>
+    <div class="capabilities-list" id="capList">
+      <div class="cap-item">
+        <div class="cap-icon">🔍</div>
+        <div class="cap-text">
+          <div class="cap-name">Analyze GitHub Profile</div>
+          <div class="cap-desc">Full roast with real commits, PRs &amp; issue data</div>
+        </div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">🔬</div>
+        <div class="cap-text">
+          <div class="cap-name">Code Quality Analysis</div>
+          <div class="cap-desc">pylint + radon complexity + AST secret detection</div>
+        </div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">🧠</div>
+        <div class="cap-text">
+          <div class="cap-name">Stress Test An Idea</div>
+          <div class="cap-desc">3-agent debate: Believer vs Destroyer vs Judge</div>
+        </div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">🏗️</div>
+        <div class="cap-text">
+          <div class="cap-name">Scaffold A Project</div>
+          <div class="cap-desc">Full folder structure + tech stack + 4-week roadmap</div>
+        </div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">🕵️</div>
+        <div class="cap-text">
+          <div class="cap-name">Research Competitors</div>
+          <div class="cap-desc">GitHub search intelligence + differentiation wedge</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    GitRoast v0.4.0 &nbsp;•&nbsp; Free Forever &nbsp;•&nbsp; MCP Powered
+  </div>
 
   <script>
     const vscode = acquireVsCodeApi();
+    let isLoading = false;
 
     function getUsername() {
       return document.getElementById('usernameInput').value.trim();
     }
 
-    function setStatus(text) {
-      document.getElementById('statusArea').innerHTML = text;
+    function setStatus(text, extraClass) {
+      const el = document.getElementById('statusArea');
+      el.innerHTML = text;
+      el.className = 'status-area' + (extraClass ? ' ' + extraClass : '');
+    }
+
+    function setLastAction(text) {
+      document.getElementById('lastAction').textContent = text;
+    }
+
+    function setButtonsDisabled(disabled) {
+      isLoading = disabled;
+      ['roastBtn', 'analyzeBtn', 'chatBtn', 'clearBtn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = disabled;
+      });
     }
 
     document.getElementById('roastBtn').addEventListener('click', () => {
       const username = getUsername();
-      if (!username) { setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>'); return; }
+      if (!username) {
+        setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>');
+        return;
+      }
       const personality = document.getElementById('personalitySelect').value;
-      setStatus(\`⏳ Roasting <span class="highlight">\${username}</span> as <span class="highlight">\${personality}</span>... This may take 30–60 seconds.\`);
+      setStatus(\`⏳ <span class="highlight">Roasting \${username}</span> as <span class="highlight">\${personality}</span><span class="loading-dots"></span>\`, 'loading');
+      setButtonsDisabled(true);
       vscode.postMessage({ command: 'roast', username, personality });
     });
 
     document.getElementById('analyzeBtn').addEventListener('click', () => {
       const username = getUsername();
-      if (!username) { setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>'); return; }
+      if (!username) {
+        setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>');
+        return;
+      }
       const maxRepos = document.getElementById('reposInput').value;
-      setStatus(\`⏳ Analyzing code quality for <span class="highlight">\${username}</span> (\${maxRepos} repos)...\`);
+      setStatus(\`⏳ Analyzing code quality for <span class="highlight">\${username}</span> (\${maxRepos} repos)<span class="loading-dots"></span>\`, 'loading');
+      setButtonsDisabled(true);
       vscode.postMessage({ command: 'analyze', username, maxRepos });
     });
 
@@ -337,7 +588,15 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     });
 
     document.getElementById('usernameInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('roastBtn').click();
+      if (e.key === 'Enter' && !isLoading) document.getElementById('roastBtn').click();
+    });
+
+    // Capabilities toggle
+    document.getElementById('capHeader').addEventListener('click', () => {
+      const list = document.getElementById('capList');
+      const toggle = document.getElementById('capToggle');
+      list.classList.toggle('open');
+      toggle.classList.toggle('open');
     });
 
     // Handle messages from extension host
@@ -345,6 +604,14 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       const msg = event.data;
       if (msg.type === 'status') {
         setStatus(msg.text);
+        setButtonsDisabled(false);
+      } else if (msg.type === 'loadingStart') {
+        setStatus(\`⏳ \${msg.text}<span class="loading-dots"></span>\`, 'loading');
+        setButtonsDisabled(true);
+      } else if (msg.type === 'loadingDone') {
+        setStatus(\`<span class="success">\${msg.text}</span>\`);
+        if (msg.lastInfo) setLastAction(msg.lastInfo);
+        setButtonsDisabled(false);
       }
     });
   </script>

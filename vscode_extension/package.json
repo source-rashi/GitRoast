@@ -1,12 +1,12 @@
 {
   "name": "gitroast",
   "displayName": "GitRoast — AI Developer Intelligence",
-  "description": "AI-powered developer roasting, code analysis, and idea stress-testing via MCP",
-  "version": "0.2.0",
+  "description": "AI-powered developer roasting, code analysis, idea stress-testing, and competitor research via MCP",
+  "version": "0.4.0",
   "publisher": "gitroast",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["AI", "Other"],
-  "keywords": ["github", "ai", "roast", "mcp", "developer-tools", "code-review"],
+  "keywords": ["github", "ai", "roast", "mcp", "developer-tools", "code-review", "competitor-research"],
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "icon": "media/logo.png",
@@ -46,6 +46,30 @@
         "command": "gitroast.clearInlineComments",
         "title": "GitRoast: Clear Inline Comments",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "gitroast.openSidebar",
+        "title": "GitRoast: Open Sidebar",
+        "icon": "$(flame)"
+      },
+      {
+        "command": "gitroast.showWelcome",
+        "title": "GitRoast: Show Welcome Page",
+        "icon": "$(info)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gitroast.analyzeProfile",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g",
+        "when": "editorFocus"
+      },
+      {
+        "command": "gitroast.addInlineComments",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorFocus"
       }
     ],
     "viewsContainers": {
@@ -72,13 +96,13 @@
         "gitroast.mcpServerPath": {
           "type": "string",
           "default": "",
-          "description": "Path to your GitRoast MCP server directory"
+          "description": "Absolute path to your GitRoast MCP server directory (the folder containing pyproject.toml)"
         },
         "gitroast.defaultPersonality": {
           "type": "string",
           "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
           "default": "comedian",
-          "description": "Default roast personality"
+          "description": "Default roast personality mode"
         }
       }
     }

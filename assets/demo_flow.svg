@@ -1,0 +1,160 @@
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flowBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d1a;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stepGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#233060;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1a2448;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stepGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a1f5e;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#201848;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stepGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1f3a50;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#162d3e;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stepGrad4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3a1a0a;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#2a1208;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="stepGrad5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#143314;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d260d;stop-opacity:1"/>
+    </linearGradient>
+    <marker id="flowArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ff6b35"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="320" fill="url(#flowBg)" rx="12"/>
+  <rect width="700" height="320" fill="none" stroke="#333" stroke-width="1" rx="12"/>
+
+  <!-- Title -->
+  <text x="350" y="32" font-family="'Arial', sans-serif" font-size="15" font-weight="700"
+        fill="#ffffff" text-anchor="middle" letter-spacing="2">HOW GITROAST WORKS</text>
+  <line x1="100" y1="44" x2="600" y2="44" stroke="#333" stroke-width="1"/>
+
+  <!-- === Step boxes === -->
+  <!-- Step 1: Enter GitHub Username -->
+  <g transform="translate(18, 68)">
+    <rect width="114" height="170" rx="10" fill="url(#stepGrad1)" stroke="#4fc3f7" stroke-width="1.5"/>
+    <!-- Number circle -->
+    <circle cx="57" cy="26" r="18" fill="#4fc3f7" opacity="0.2"/>
+    <circle cx="57" cy="26" r="18" fill="none" stroke="#4fc3f7" stroke-width="1.5"/>
+    <text x="57" y="31" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900"
+          fill="#4fc3f7" text-anchor="middle">1</text>
+    <!-- Icon: person -->
+    <text x="57" y="82" font-family="'Arial', sans-serif" font-size="30"
+          text-anchor="middle">👤</text>
+    <!-- Label -->
+    <text x="57" y="116" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Enter</text>
+    <text x="57" y="130" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">GitHub</text>
+    <text x="57" y="144" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Username</text>
+    <text x="57" y="162" font-family="'Arial', sans-serif" font-size="9"
+          fill="#4fc3f7" text-anchor="middle">any GH user</text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="133" y1="153" x2="149" y2="153" stroke="#ff6b35" stroke-width="2"
+        marker-end="url(#flowArrow)"/>
+
+  <!-- Step 2: Choose Personality -->
+  <g transform="translate(152, 68)">
+    <rect width="114" height="170" rx="10" fill="url(#stepGrad2)" stroke="#ce93d8" stroke-width="1.5"/>
+    <circle cx="57" cy="26" r="18" fill="#ce93d8" opacity="0.2"/>
+    <circle cx="57" cy="26" r="18" fill="none" stroke="#ce93d8" stroke-width="1.5"/>
+    <text x="57" y="31" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900"
+          fill="#ce93d8" text-anchor="middle">2</text>
+    <text x="57" y="82" font-family="'Arial', sans-serif" font-size="22" text-anchor="middle">🎤🚀😤🧘👻</text>
+    <text x="57" y="100" font-family="'Arial', sans-serif" font-size="8"
+          fill="#ce93d888" text-anchor="middle">personalities</text>
+    <text x="57" y="116" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Choose</text>
+    <text x="57" y="130" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Personality</text>
+    <text x="57" y="144" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Mode</text>
+    <text x="57" y="162" font-family="'Arial', sans-serif" font-size="9"
+          fill="#ce93d8" text-anchor="middle">5 modes</text>
+  </g>
+
+  <!-- Arrow 2→3 -->
+  <line x1="267" y1="153" x2="283" y2="153" stroke="#ff6b35" stroke-width="2"
+        marker-end="url(#flowArrow)"/>
+
+  <!-- Step 3: AI Analyzes -->
+  <g transform="translate(286, 68)">
+    <rect width="114" height="170" rx="10" fill="url(#stepGrad3)" stroke="#4dd0e1" stroke-width="1.5"/>
+    <circle cx="57" cy="26" r="18" fill="#4dd0e1" opacity="0.2"/>
+    <circle cx="57" cy="26" r="18" fill="none" stroke="#4dd0e1" stroke-width="1.5"/>
+    <text x="57" y="31" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900"
+          fill="#4dd0e1" text-anchor="middle">3</text>
+    <text x="57" y="86" font-family="'Arial', sans-serif" font-size="34" text-anchor="middle">🔍</text>
+    <text x="57" y="116" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">AI Analyzes</text>
+    <text x="57" y="130" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Real Profile</text>
+    <text x="57" y="144" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Data</text>
+    <text x="57" y="162" font-family="'Arial', sans-serif" font-size="9"
+          fill="#4dd0e1" text-anchor="middle">Groq LLM free</text>
+  </g>
+
+  <!-- Arrow 3→4 -->
+  <line x1="401" y1="153" x2="417" y2="153" stroke="#ff6b35" stroke-width="2"
+        marker-end="url(#flowArrow)"/>
+
+  <!-- Step 4: Roast Generated -->
+  <g transform="translate(420, 68)">
+    <rect width="114" height="170" rx="10" fill="url(#stepGrad4)" stroke="#ff6b35" stroke-width="1.5"/>
+    <circle cx="57" cy="26" r="18" fill="#ff6b35" opacity="0.2"/>
+    <circle cx="57" cy="26" r="18" fill="none" stroke="#ff6b35" stroke-width="1.5"/>
+    <text x="57" y="31" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900"
+          fill="#ff6b35" text-anchor="middle">4</text>
+    <text x="57" y="86" font-family="'Arial', sans-serif" font-size="34" text-anchor="middle">🔥</text>
+    <text x="57" y="116" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Roast</text>
+    <text x="57" y="130" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Generated</text>
+    <text x="57" y="144" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Instantly</text>
+    <text x="57" y="162" font-family="'Arial', sans-serif" font-size="9"
+          fill="#ff6b35" text-anchor="middle">data-grounded</text>
+  </g>
+
+  <!-- Arrow 4→5 -->
+  <line x1="535" y1="153" x2="551" y2="153" stroke="#ff6b35" stroke-width="2"
+        marker-end="url(#flowArrow)"/>
+
+  <!-- Step 5: Real Advice -->
+  <g transform="translate(554, 68)">
+    <rect width="114" height="170" rx="10" fill="url(#stepGrad5)" stroke="#66bb6a" stroke-width="1.5"/>
+    <circle cx="57" cy="26" r="18" fill="#66bb6a" opacity="0.2"/>
+    <circle cx="57" cy="26" r="18" fill="none" stroke="#66bb6a" stroke-width="1.5"/>
+    <text x="57" y="31" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900"
+          fill="#66bb6a" text-anchor="middle">5</text>
+    <text x="57" y="86" font-family="'Arial', sans-serif" font-size="34" text-anchor="middle">✅</text>
+    <text x="57" y="116" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Real Advice</text>
+    <text x="57" y="130" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">Given Back</text>
+    <text x="57" y="144" font-family="'Arial', sans-serif" font-size="11" font-weight="700"
+          fill="#ffffff" text-anchor="middle">To You</text>
+    <text x="57" y="162" font-family="'Arial', sans-serif" font-size="9"
+          fill="#66bb6a" text-anchor="middle">actionable tips</text>
+  </g>
+
+  <!-- Bottom tagline -->
+  <text x="350" y="282" font-family="'Arial', sans-serif" font-size="12"
+        fill="#555" text-anchor="middle">End-to-end in under 60 seconds • 100% free APIs • No credit card required</text>
+
+  <!-- Bottom decorative line -->
+  <line x1="50" y1="296" x2="650" y2="296" stroke="#ff6b35" stroke-width="0.5" opacity="0.3"/>
+</svg>

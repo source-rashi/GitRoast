@@ -1,7 +1,7 @@
 """
 GitRoast — MCP Server Entry Point
 =====================================
-Exposes 7 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
+Exposes 8 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
 Communicates via stdio — the standard MCP protocol.
 
 Tools:
@@ -9,9 +9,10 @@ Tools:
   2. analyze_code_quality   — Real static analysis: pylint, radon, AST (Phase 2, LIVE)
   3. stress_test_idea        — Multi-agent idea debate (Phase 3, LIVE)
   4. scaffold_project        — Project scaffolding (Phase 3, LIVE)
-  5. research_competitors    — Competitor intelligence (Phase 4, stub)
+  5. research_competitors    — Competitor intelligence (Phase 4, LIVE)
   6. set_personality         — Switch roast persona
   7. ask_followup            — Follow-up questions without re-fetch
+  8. clear_session           — Clear cache and conversation history
 
 LLM: Groq (free, no credit card, llama3-70b-8192)
 """
@@ -32,6 +33,7 @@ from mcp_server.tools.github_scraper import GitHubScraper
 from mcp_server.tools.code_analyzer import CodeAnalyzer
 from mcp_server.tools.idea_debater import IdeaDebater, DebateResult
 from mcp_server.tools.scaffolder import ProjectScaffolder, ScaffoldResult
+from mcp_server.tools.competitor_researcher import CompetitorResearcher, CompetitorReport
 from mcp_server.personality.engine import PersonalityEngine
 from mcp_server.orchestrator import GitRoastOrchestrator
 
@@ -354,6 +356,42 @@ async def handle_scaffold_project(
 
 
 # ---------------------------------------------------------------------------
+# Competitor research handler
+# ---------------------------------------------------------------------------
+
+async def handle_research_competitors(
+    arguments: dict,
+    researcher: CompetitorResearcher,
+    engine: PersonalityEngine,
+    groq_client: Groq,
+) -> str:
+    """Search GitHub for competitor projects and synthesize intelligence."""
+    idea: str = arguments.get("idea", "").strip()
+    personality: str = arguments.get("personality", "yc_founder")
+
+    if not idea or len(idea) < 10:
+        return (
+            "❌ Please describe your idea more specifically. "
+            "Example: `research_competitors(idea='VS Code extension for AI code review')`"
+        )
+
+    engine.validate_personality(personality)
+
+    try:
+        report = await researcher.research(idea, personality)
+        formatted = researcher.format_report_for_display(report)
+        return engine.wrap_response(formatted, personality)
+    except Exception as exc:
+        logger.exception(f"Competitor research failed: {exc}")
+        return (
+            f"❌ Competitor research failed: {exc}\n\n"
+            "Please check that your GITHUB_TOKEN is set in .env\n"
+            "Get a free token at: https://github.com/settings/tokens\n"
+            "Scopes needed: read:user, public_repo"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
 
@@ -379,6 +417,7 @@ async def main():
     orchestrator = GitRoastOrchestrator(groq_client)
     debater = IdeaDebater(groq_client)
     scaffolder = ProjectScaffolder(groq_client, github_token=os.getenv("GITHUB_TOKEN"))
+    researcher = CompetitorResearcher(groq_client, github_token=os.getenv("GITHUB_TOKEN", ""))
 
     # Initialize MCP server
     server = Server("gitroast")
@@ -539,13 +578,24 @@ async def main():
             ),
             types.Tool(
                 name="research_competitors",
-                description="Research existing competitors for your idea. [Coming in Phase 4]",
+                description=(
+                    "Search GitHub for similar projects and generate competitor intelligence — "
+                    "who built what, where they fall short, and what your differentiating wedge is. "
+                    "Uses GitHub Search API (free). "
+                    "Output: competitor table, differentiation angles, strategic synthesis, and your wedge."
+                ),
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "idea": {
                             "type": "string",
-                            "description": "Your project idea to research competitors for",
+                            "description": "Your idea or project concept to research competitors for",
+                        },
+                        "personality": {
+                            "type": "string",
+                            "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+                            "default": "yc_founder",
+                            "description": "Personality mode for the intelligence report",
                         },
                     },
                     "required": ["idea"],
@@ -583,7 +633,9 @@ async def main():
                     arguments, scaffolder, orchestrator, engine, groq_client
                 )
             elif name == "research_competitors":
-                result = "🕵️ Competitor researcher coming in Phase 4."
+                result = await handle_research_competitors(
+                    arguments, researcher, engine, groq_client
+                )
             else:
                 result = f"Unknown tool: {name}"
         except Exception as exc:
@@ -596,10 +648,10 @@ async def main():
     # Startup banner
     # ------------------------------------------------------------------
     console.print(
-        "\n[bold red]🔥 GitRoast MCP Server v0.3.0 — Online[/bold red]\n"
+        "\n[bold red]🔥 GitRoast MCP Server v0.4.0 — Online[/bold red]\n"
         "[dim]LLM: Groq (llama3-70b-8192) — Free tier[/dim]\n"
-        "[bold green]Phase 3 LIVE: Idea Stress Tester + Project Scaffolder[/bold green]\n"
-        "[dim]Waiting for connections via stdio...[/dim]\n"
+        "[bold green]Phase 4 LIVE: Competitor Researcher + VS Code Polish[/bold green]\n"
+        "[dim]8 tools registered. Waiting for connections via stdio...[/dim]\n"
     )
 
     # ------------------------------------------------------------------

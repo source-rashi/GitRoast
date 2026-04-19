@@ -103,8 +103,8 @@ export class GitRoastMCPClient {
         return new Promise<string>((resolve, reject) => {
             const timer = setTimeout(() => {
                 this.pendingRequests.delete(id);
-                reject(new Error(`Tool '${toolName}' timed out after 60 seconds.`));
-            }, 60_000);
+                reject(new Error(`Tool '${toolName}' timed out after 120 seconds.`));
+            }, 120_000);
             this.pendingRequests.set(id, { resolve, reject, timer });
         });
     }
@@ -123,6 +123,238 @@ export class GitRoastMCPClient {
 }
 
 // ---------------------------------------------------------------------------
+// Status bar item
+// ---------------------------------------------------------------------------
+
+let statusBarItem: vscode.StatusBarItem | null = null;
+
+function createStatusBar(): vscode.StatusBarItem {
+    const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    item.text = '$(flame) GitRoast';
+    item.tooltip = 'GitRoast — Click to open sidebar';
+    item.command = 'gitroast.openSidebar';
+    item.color = new vscode.ThemeColor('statusBar.foreground');
+    item.show();
+    return item;
+}
+
+function setStatusBarActive(active: boolean): void {
+    if (!statusBarItem) { return; }
+    if (active) {
+        statusBarItem.text = '$(flame) GitRoast: Analyzing...';
+        statusBarItem.color = '#ff6b35';
+    } else {
+        statusBarItem.text = '$(flame) GitRoast';
+        statusBarItem.color = undefined;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Welcome webview
+// ---------------------------------------------------------------------------
+
+function showWelcomeWebview(context: vscode.ExtensionContext): void {
+    const panel = vscode.window.createWebviewPanel(
+        'gitroastWelcome',
+        '🔥 Welcome to GitRoast',
+        vscode.ViewColumn.One,
+        { enableScripts: false }
+    );
+
+    panel.webview.html = getWelcomeHtml();
+}
+
+function getWelcomeHtml(): string {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to GitRoast</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #1e1e1e;
+      color: #cccccc;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      line-height: 1.6;
+    }
+    .logo { text-align: center; margin-bottom: 32px; }
+    .logo-text {
+      font-size: 48px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle { font-size: 16px; color: #888; margin-top: 8px; letter-spacing: 1px; }
+    h2 { color: #ff6b35; font-size: 18px; margin: 28px 0 12px; font-weight: 700; }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 14px 18px;
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .step-num {
+      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      color: #111;
+      font-weight: 900;
+      font-size: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body strong { color: #ffffff; display: block; margin-bottom: 4px; }
+    .step-body span { font-size: 12px; color: #888; }
+    code {
+      background: #2d2d2d;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      color: #f7c948;
+    }
+    .tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .tool-card {
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .tool-card .icon { font-size: 20px; margin-bottom: 6px; }
+    .tool-card .name { font-size: 13px; font-weight: 700; color: #cc; }
+    .tool-card .desc { font-size: 11px; color: #666; margin-top: 2px; }
+    .api-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .api-card {
+      background: #252525;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .api-card .api-name { font-size: 14px; font-weight: 700; color: #ff6b35; margin-bottom: 4px; }
+    .api-card .api-url { font-size: 11px; color: #888; }
+    .badge {
+      display: inline-block;
+      background: #4caf5020;
+      border: 1px solid #4caf50;
+      color: #4caf50;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <div class="logo-text">🔥 GitRoast</div>
+    <div class="subtitle">AI Developer Intelligence</div>
+  </div>
+
+  <h2>🚀 Quick Start (3 steps)</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Get your free API keys</strong>
+      <span>Groq API key (console.groq.com) + GitHub token (github.com/settings/tokens)</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Configure the MCP server path</strong>
+      <span>Open VS Code Settings → search "gitroast" → set <code>mcpServerPath</code> to your GitRoast folder</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Start roasting</strong>
+      <span>Use the sidebar (🔥 icon) or press <code>Ctrl+Shift+G</code> to analyze any GitHub profile</span>
+    </div>
+  </div>
+
+  <h2>🛠️ Available Commands</h2>
+
+  <div class="tools">
+    <div class="tool-card">
+      <div class="icon">🔍</div>
+      <div class="name">Analyze Profile</div>
+      <div class="desc">Roast any GitHub user with real data · Ctrl+Shift+G</div>
+    </div>
+    <div class="tool-card">
+      <div class="icon">🔬</div>
+      <div class="name">Code Quality</div>
+      <div class="desc">pylint + radon + AST analysis across repos</div>
+    </div>
+    <div class="tool-card">
+      <div class="icon">🧠</div>
+      <div class="name">Stress Test Idea</div>
+      <div class="desc">3-agent debate: Believer/Destroyer/Judge</div>
+    </div>
+    <div class="tool-card">
+      <div class="icon">🏗️</div>
+      <div class="name">Scaffold Project</div>
+      <div class="desc">Full folder structure + 4-week roadmap</div>
+    </div>
+    <div class="tool-card">
+      <div class="icon">🕵️</div>
+      <div class="name">Research Competitors</div>
+      <div class="desc">GitHub search intelligence + your wedge</div>
+    </div>
+    <div class="tool-card">
+      <div class="icon">💬</div>
+      <div class="name">Inline Comments</div>
+      <div class="desc">AI review comments in your editor · Ctrl+Shift+R</div>
+    </div>
+  </div>
+
+  <h2>🔑 Get Your Free API Keys</h2>
+
+  <div class="api-section">
+    <div class="api-card">
+      <div class="api-name">Groq API <span class="badge">FREE</span></div>
+      <div class="api-url">console.groq.com</div>
+      <div style="font-size:11px;color:#666;margin-top:8px;">~30 seconds · no credit card</div>
+    </div>
+    <div class="api-card">
+      <div class="api-name">GitHub Token <span class="badge">FREE</span></div>
+      <div class="api-url">github.com/settings/tokens</div>
+      <div style="font-size:11px;color:#666;margin-top:8px;">read:user + public_repo scope</div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// ---------------------------------------------------------------------------
 // Extension activate
 // ---------------------------------------------------------------------------
 
@@ -136,25 +368,52 @@ export function activate(context: vscode.ExtensionContext): void {
 
     mcpClient = new GitRoastMCPClient(outputChannel);
 
+    // Create status bar item
+    statusBarItem = createStatusBar();
+    context.subscriptions.push(statusBarItem);
+
     // Auto-start if path is configured
     const config = vscode.workspace.getConfiguration('gitroast');
     const serverPath: string = config.get('mcpServerPath', '');
+
     if (serverPath) {
         mcpClient.start(serverPath);
     } else {
-        vscode.window
-            .showWarningMessage(
-                'GitRoast: MCP server path not configured.',
-                'Configure Path'
-            )
-            .then((choice) => {
-                if (choice === 'Configure Path') {
-                    vscode.commands.executeCommand(
-                        'workbench.action.openSettings',
-                        'gitroast.mcpServerPath'
-                    );
-                }
-            });
+        // First-activation welcome notification
+        const isFirstTime = !context.globalState.get('gitroast.welcomed');
+        if (isFirstTime) {
+            context.globalState.update('gitroast.welcomed', true);
+            vscode.window
+                .showInformationMessage(
+                    '🔥 Welcome to GitRoast! Configure your MCP server path to get started.',
+                    'Configure Now',
+                    'Learn More'
+                )
+                .then((choice) => {
+                    if (choice === 'Configure Now') {
+                        vscode.commands.executeCommand(
+                            'workbench.action.openSettings',
+                            'gitroast.mcpServerPath'
+                        );
+                    } else if (choice === 'Learn More') {
+                        vscode.commands.executeCommand('gitroast.showWelcome');
+                    }
+                });
+        } else {
+            vscode.window
+                .showWarningMessage(
+                    'GitRoast: MCP server path not configured.',
+                    'Configure Path'
+                )
+                .then((choice) => {
+                    if (choice === 'Configure Path') {
+                        vscode.commands.executeCommand(
+                            'workbench.action.openSettings',
+                            'gitroast.mcpServerPath'
+                        );
+                    }
+                });
+        }
     }
 
     // Register sidebar
@@ -166,6 +425,26 @@ export function activate(context: vscode.ExtensionContext): void {
     // Register inline comment manager
     const inlineCommentManager = new InlineCommentManager(context);
     registerInlineCommentCommands(context, inlineCommentManager);
+
+    // ----------------------------------------------------------------
+    // Command: Open Sidebar
+    // ----------------------------------------------------------------
+    const openSidebarCmd = vscode.commands.registerCommand(
+        'gitroast.openSidebar',
+        () => {
+            vscode.commands.executeCommand('workbench.view.extension.gitroast-sidebar');
+        }
+    );
+
+    // ----------------------------------------------------------------
+    // Command: Show Welcome
+    // ----------------------------------------------------------------
+    const showWelcomeCmd = vscode.commands.registerCommand(
+        'gitroast.showWelcome',
+        () => {
+            showWelcomeWebview(context);
+        }
+    );
 
     // ----------------------------------------------------------------
     // Command: Analyze GitHub Profile
@@ -200,6 +479,7 @@ export function activate(context: vscode.ExtensionContext): void {
             if (!chosen) { return; }
             const personality = typeof chosen === 'string' ? chosen : (chosen as { value: string }).value;
 
+            setStatusBarActive(true);
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -216,6 +496,8 @@ export function activate(context: vscode.ExtensionContext): void {
                     } catch (err: unknown) {
                         const msg = err instanceof Error ? err.message : String(err);
                         vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
                     }
                 }
             );
@@ -241,6 +523,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
             const maxRepos = args?.maxRepos ?? 3;
 
+            setStatusBarActive(true);
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
@@ -257,6 +540,8 @@ export function activate(context: vscode.ExtensionContext): void {
                     } catch (err: unknown) {
                         const msg = err instanceof Error ? err.message : String(err);
                         vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
                     }
                 }
             );
@@ -325,6 +610,8 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     context.subscriptions.push(
+        openSidebarCmd,
+        showWelcomeCmd,
         analyzeProfileCmd,
         analyzeCodeCmd,
         setPersonalityCmd,
@@ -347,4 +634,6 @@ async function openInDocument(content: string, _title: string): Promise<void> {
 export function deactivate(): void {
     mcpClient?.stop();
     mcpClient = null;
+    statusBarItem?.dispose();
+    statusBarItem = null;
 }

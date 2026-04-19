@@ -1,24 +1,21 @@
 <div align="center">
 
-```
- ██████╗ ██╗████████╗██████╗  ██████╗  █████╗ ███████╗████████╗
-██╔════╝ ██║╚══██╔══╝██╔══██╗██╔═══██╗██╔══██╗██╔════╝╚══██╔══╝
-██║  ███╗██║   ██║   ██████╔╝██║   ██║███████║███████╗   ██║   
-██║   ██║██║   ██║   ██╔══██╗██║   ██║██╔══██║╚════██║   ██║   
-╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██║  ██║███████║   ██║   
- ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝  
-```
+<img src="assets/banner.svg" alt="GitRoast — AI Developer Intelligence" width="100%"/>
 
-### 🔥 AI-Powered Developer Intelligence via MCP
+<br/>
 
-**The most brutally honest, data-driven developer roaster on the internet.**  
-Real GitHub data. Real roasts. Genuine feedback. Zero BS.
-
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue?style=flat-square&logo=python)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-1.0-orange?style=flat-square)](https://modelcontextprotocol.io)
-[![Groq](https://img.shields.io/badge/LLM-Groq%20%28Free%29-green?style=flat-square)](https://console.groq.com)
+[![Groq](https://img.shields.io/badge/LLM-Groq%20llama3--70b-green?style=flat-square)](https://console.groq.com)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?style=flat-square&logo=visual-studio-code)](https://marketplace.visualstudio.com)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+[![100% Free](https://img.shields.io/badge/APIs-100%25%20Free-gold?style=flat-square)](README.md#get-your-free-api-keys)
+
+**The most brutally honest, data-driven developer intelligence tool on the internet.**  
+Real GitHub data. Real roasts. Real competitor research. Zero BS. 100% free APIs.
+
+[**🚀 Quick Start**](#-quick-start-5-minutes-all-free) · [**🎮 Usage**](#-usage-examples) · [**🛠️ Tools**](#-mcp-tools-reference) · [**📁 Structure**](#-project-structure) · [**🤝 Contributing**](#-contributing)
 
 </div>
 
@@ -26,15 +23,15 @@ Real GitHub data. Real roasts. Genuine feedback. Zero BS.
 
 ## 🤔 What Is GitRoast?
 
-GitRoast is an **MCP (Model Context Protocol) server** that connects to any compatible AI agent (Claude Desktop, Cursor, Windsurf, etc.) and gives it superpowers to analyze real GitHub developer profiles.
+GitRoast is an **MCP (Model Context Protocol) server** that connects to any compatible AI agent (Claude Desktop, Cursor, Windsurf, VS Code) and gives it full developer intelligence superpowers.
 
-It doesn't lie. It doesn't guess. It scrapes **your actual GitHub data** — commits, PRs, issues, READMEs, languages — and uses a free Groq LLM to turn it into:
+It doesn't lie. It doesn't guess. It uses **real GitHub data** — commits, PRs, issues, READMEs, code files — and a free Groq LLM to generate:
 
-- 🔥 **A personalized roast** grounded in specific facts ("17 commits titled 'fix'. Fix WHAT?")
-- 💪 **Genuine praise** where it's actually earned
-- 📋 **Actionable advice** tied to patterns it found in your actual repos
-
-Five personality modes: **Comedian**, **YC Co-Founder**, **Senior Dev**, **Zen Mentor**, **Anonymous Stranger**.
+- 🔥 **A personalized developer roast** grounded in specific data facts
+- 🔬 **Real static code analysis** — pylint scores, cyclomatic complexity, secret detection
+- 🧠 **Multi-agent idea debates** — three AI agents arguing for and against your idea
+- 🏗️ **Full project scaffolds** — folder structure, tech stack, 4-week roadmap
+- 🕵️ **Competitor intelligence** — GitHub Search API, differentiation angles, your wedge
 
 > Built with: Python 3.11+, MCP SDK, PyGitHub, Groq (llama3-70b-8192), Pydantic v2, Rich.  
 > **100% free APIs. No credit card required anywhere.**
@@ -44,17 +41,23 @@ Five personality modes: **Comedian**, **YC Co-Founder**, **Senior Dev**, **Zen M
 ## ✨ Features
 
 | Feature | Status | Description |
-|---|---|---|
-| 🔍 **Deep GitHub Scraping** | ✅ Live | Repos, commits, PRs, issues, READMEs, languages |
-| 🔥 **AI Roast Generation** | ✅ Live | Groq-powered, personality-aware, data-grounded. Now with **real static analysis** — pylint scores, cyclomatic complexity, hardcoded secret detection, and more. Every roast is backed by actual file-level findings. |
-| 💬 **Multi-turn Follow-ups** | ✅ Live | Ask questions without re-fetching GitHub |
-| 🎭 **5 Personality Modes** | ✅ Live | Comedian, YC, Senior Dev, Zen, Stranger |
-| 🗂️ **Session Caching** | ✅ Live | Profiles cached for instant follow-ups |
+|---------|--------|-------------|
+| 🔍 **Deep GitHub Scraping** | ✅ Live | Repos, commits, PRs, issues, READMEs, languages — up to 20 repos |
+| 🔥 **AI Roast Generation** | ✅ Live | Groq-powered, personality-aware, every point backed by a real number |
+| 💬 **Multi-turn Follow-ups** | ✅ Live | Ask questions without re-fetching GitHub — session cached |
+| 🎭 **5 Personality Modes** | ✅ Live | Comedian, YC Founder, Senior Dev, Zen Mentor, Anonymous Stranger |
+| 🗂️ **Session Caching** | ✅ Live | Profiles cached for instant follow-ups in the same session |
 | 🔨 **Code Quality Analysis** | ✅ Live | pylint + radon complexity + AST — secrets, nesting, bare excepts, missing tests |
-| 🧠 **Idea Stress Tester** | ✅ Live | Three AI agents debate your idea in real time. The Believer finds every reason it could work. The Destroyer finds every reason it will fail. The Judge delivers a verdict with a refined version of your idea and concrete next steps. No more building in an echo chamber. |
-| 🏗️ **Project Scaffolder** | ✅ Live | Survived the debate? GitRoast turns your idea into a real starter project — complete folder structure, tech stack recommendation (free tools only), core starter files with actual runnable code, and a week-by-week 4-week roadmap. Optionally creates the GitHub repo for you. |
-| 💬 **Inline Code Comments** | ✅ Live | GitRoast drops color-coded review comments directly into your open VS Code files, with severity decorations (error/warning/info/praise) and Problems panel integration. |
-| 🕵️ **Competitor Researcher** | 🔜 Phase 4 | GitHub + web intelligence |
+| 🧠 **Idea Stress Tester** | ✅ Live | 3-agent debate: The Believer vs The Destroyer, resolved by The Judge |
+| 🏗️ **Project Scaffolder** | ✅ Live | Full folder structure, runnable starter files, 4-week roadmap, optional GitHub repo creation |
+| 💬 **Inline Code Comments** | ✅ Live | Color-coded review decorations in VS Code with Problems panel integration |
+| 🕵️ **Competitor Researcher** | ✅ **Live** | GitHub Search API + Groq synthesis — competitors, weaknesses, differentiation angles, your wedge |
+
+---
+
+<div align="center">
+<img src="assets/demo_flow.svg" alt="How GitRoast Works" width="90%"/>
+</div>
 
 ---
 
@@ -65,7 +68,9 @@ Five personality modes: **Comedian**, **YC Co-Founder**, **Senior Dev**, **Zen M
 ```bash
 git clone https://github.com/yourusername/gitroast.git
 cd gitroast
+
 python -m venv .venv
+
 # Windows:
 .venv\Scripts\activate
 # macOS/Linux:
@@ -87,8 +92,9 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# Then edit .env with your keys:
 ```
+
+Edit `.env`:
 
 ```env
 GROQ_API_KEY=gsk_your_groq_key_here
@@ -115,85 +121,181 @@ Add this to your Claude Desktop config (`claude_desktop_config.json`):
 - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Then restart Claude Desktop. You'll see the GitRoast tools appear in the tool list.
+Restart Claude Desktop → GitRoast tools appear in the tool list.
+
+### 5. (Optional) Install the VS Code Extension
+
+Open VS Code in the `vscode_extension/` directory and press `F5` to run in development mode.
+
+In the sidebar, set `gitroast.mcpServerPath` to your GitRoast folder path.
+
+**Keyboard shortcuts:**
+- `Ctrl+Shift+G` / `Cmd+Shift+G` → Analyze GitHub Profile
+- `Ctrl+Shift+R` / `Cmd+Shift+R` → Add Inline Code Comments
 
 ---
 
 ## 🎮 Usage Examples
 
-### Roast a Developer
-
-In Claude Desktop (or any compatible agent):
+### 🔥 Roast a Developer
 
 ```
-Analyze torvalds on GitHub and roast them as a yc_founder
+analyze_developer(username="torvalds", personality="comedian")
+analyze_developer(username="addyosmani", personality="yc_founder")
 ```
 
-```
-analyze_developer(username="addyosmani", personality="senior_dev")
-```
-
-### Switch Personality Mid-Conversation
+### 🔬 Analyze Code Quality
 
 ```
-set_personality(personality="zen_mentor")
+analyze_code_quality(username="facebook", max_repos=3, personality="senior_dev")
 ```
 
-### Ask Follow-up Questions
+### 🧠 Stress Test an Idea
+
+```
+stress_test_idea(idea="A VS Code extension that roasts your GitHub profile using AI")
+```
+
+### 🏗️ Scaffold a Project
+
+```
+scaffold_project(idea="CLI tool for analyzing GitHub commit patterns", create_repo=false)
+```
+
+### 🕵️ Research Competitors
+
+```
+research_competitors(idea="VS Code extension that analyzes code quality using AI", personality="yc_founder")
+```
+
+Output: competitor table, weaknesses, differentiation angles, your wedge, strategic recommendation.
+
+### 💬 Ask Follow-up Questions
 
 ```
 ask_followup(question="Which of their repos has the best README?")
-ask_followup(question="What language should they focus on?")
-ask_followup(question="How many of their PRs actually had descriptions?")
+ask_followup(question="What language should they focus on next?")
 ```
 
-### Clear Session
+### 🔄 Switch Personality
 
 ```
-clear_session()
+set_personality(personality="zen_mentor")
 ```
 
 ---
 
 ## 🎭 The 5 Personality Modes
 
-| Mode | Emoji | Vibe | Example |
-|------|-------|------|---------|
-| `comedian` | 🎤 | Stand-up roast energy | *"17 commits called 'fix'. Fix WHAT? File a police report."* |
+| Mode | Emoji | Vibe | Example Output |
+|------|-------|------|----------------|
+| `comedian` | 🎤 | Stand-up roast | *"17 commits titled 'fix'. Fix WHAT? File a police report."* |
 | `yc_founder` | 🚀 | Startup intensity | *"Your commit frequency is not investor-ready. We need to talk metrics."* |
 | `senior_dev` | 😤 | Tired veteran | *"...I've seen this pattern since 2009. It's not nostalgia, it's concern."* |
-| `zen_mentor` | 🧘 | Tough love with patience | *"Your gap of 47 days speaks to something. Let's examine that."* |
+| `zen_mentor` | 🧘 | Tough love | *"Your gap of 47 days speaks to something. Let's examine that."* |
 | `stranger` | 👻 | Unfiltered chaos | *"Zero stars. Two years. The algorithm has rendered its verdict."* |
+
+---
+
+## 🕵️ The Competitor Researcher
+
+GitRoast's **Competitor Intelligence Engine** searches GitHub for projects similar to your idea — no paid APIs required.
+
+**How it works:**
+1. Extracts smart keywords from your idea description
+2. Runs 3 targeted GitHub searches (top stars, keyword combos, tool variants)
+3. Analyzes each competitor: stars, activity, README quality, issue backlog, topics
+4. Auto-detects weaknesses: abandoned, poor docs, no install instructions, overwhelmed maintainers
+5. Finds differentiation angles: what's missing from ALL competitors
+6. Groq synthesizes into a full intelligence report
+
+**Output includes:**
+- 📊 Competitor table with stars, activity, top weakness
+- 🎯 Differentiation angles with evidence and strength rating
+- 🏹 **Your Wedge** — the single most important differentiator (one sentence, pitch-deck ready)
+- 📋 Strategic Recommendation: Build it / Niche down / Find a gap / Reconsider
+- 📅 3 Things To Do This Week
+
+> *"3 people built this. None of them have X. That's your wedge."*
+
+---
+
+## 🧠 The Debate Arena
+
+GitRoast's **Idea Stress Tester** is a 3-agent multi-AI debate system.
+
+```
+User pitches idea
+      ↓
+🟢 Agent 1: The Believer   → "Here's every reason this could WIN"
+🔴 Agent 2: The Destroyer  → "Here's every reason this will FAIL"
+      ↓
+⚖️  Agent 3: The Judge     → Verdict + Refined Idea + Next Steps
+```
+
+**Sample output:**
+
+```
+## 🟢 The Case FOR: "AI-powered code review VS Code extension"
+### The Unfair Advantage
+The $12B code review market is dominated by GitHub's generic suggestions.
+A personality-driven, developer-identity-aware tool is a completely different product.
+
+Confidence Score: 8/10
+
+---
+
+## 🔴 The Case AGAINST
+### The Graveyard
+GitHub Copilot, CodeGuru, SonarQube — all deeply entrenched.
+"AI code review" is a crowded pitch at every accelerator right now.
+
+Confidence Score: 6/10
+
+---
+
+## ⚖️ The Verdict: BUILD IT — Niche Down
+The Destroyer misjudged the personality angle. Roasting is a different emotional
+contract than reviewing — it drives deeper engagement.
+Refined idea: GitRoast for teams — roast your PR before it goes to review.
+```
 
 ---
 
 ## 🔬 What Data Does GitRoast Actually Analyze?
 
-### Repository Analysis (up to 20 repos)
-- Stars, forks, language, description
+### GitHub Profile (up to 20 repos)
+- Stars, forks, language, description per repo
 - README quality score (0–10): badges, screenshots, install/usage sections, word count
-- Test file detection (does any file contain "test" in the path?)
-- Days since last commit
-- Commit count per repo
+- Test file detection
+- Days since last commit, commit count per repo
 
-### Commit Analysis (last 90 days, up to 8 repos)
+### Commit Analysis (last 90 days)
 - Total commits and weekly average
-- Bad commit message detection (exact match against 30+ lazy patterns: "fix", "wip", ".", "asdf"...)
-- Late-night commits (11pm–4am)
-- Weekend commits
-- Most active coding hour
-- Longest gap between commits
+- Bad commit message detection (30+ lazy patterns: "fix", "wip", ".", "asdf"...)
+- Late-night commits (11pm–4am), weekend commits
+- Most active coding hour, longest gap between commits
 
-### Pull Request Analysis (top 5 starred repos)
+### Pull Request Analysis
 - Total, merged, and open PR counts
-- PR description length (< 20 chars = "no description")
+- PR description quality (< 20 chars = "no description")
 - Average days to merge
 
-### Issue Analysis (up to 5 repos)
-- Open vs. closed ratio
-- Issues open for > 30 days
-- Issues with no labels
-- Average days to close
+### Issue Analysis
+- Open vs. closed ratio, issues open > 30 days
+- Issues with no labels, average days to close
+
+### Code Quality (Static Analysis)
+- **pylint** — import errors, undefined names, duplicate code
+- **radon** — cyclomatic complexity per function (A–F grades)
+- **AST** — hardcoded secrets, bare except, deeply nested code
+- Missing test files, TODO/FIXME density
+
+### Competitor Research
+- GitHub search across 3 targeted queries
+- Stars, forks, last activity, open issues per competitor
+- README word count and install instructions check
+- Topic tags, language distribution
 
 ---
 
@@ -201,37 +303,80 @@ clear_session()
 
 ```
 gitroast/
-├── .github/workflows/ci.yml       # GitHub Actions CI
+├── assets/
+│   ├── logo.svg                   # App icon (pure SVG)
+│   ├── banner.svg                 # README header banner
+│   ├── architecture.svg           # System architecture diagram
+│   └── demo_flow.svg              # 5-step user flow diagram
+├── .github/
+│   └── workflows/ci.yml           # GitHub Actions CI
 ├── mcp_server/
 │   ├── server.py                  # MCP entry point — 8 registered tools
 │   ├── orchestrator.py            # Session cache, conversation history, debate context
 │   ├── tools/
-│   │   ├── github_scraper.py      # ★ Core engine — full GitHub analysis
-│   │   ├── code_analyzer.py       # ★ Phase 2 LIVE — pylint + radon + AST
-│   │   ├── idea_debater.py        # ★ Phase 3 LIVE — multi-agent debate system
-│   │   ├── scaffolder.py          # ★ Phase 3 LIVE — project scaffolding engine
-│   │   └── competitor_researcher.py  # Phase 4 stub
+│   │   ├── github_scraper.py      # ★ Core — full GitHub profile analysis engine
+│   │   ├── code_analyzer.py       # ★ Phase 2 — pylint + radon + AST analysis
+│   │   ├── idea_debater.py        # ★ Phase 3 — multi-agent debate system
+│   │   ├── scaffolder.py          # ★ Phase 3 — project scaffolding engine
+│   │   └── competitor_researcher.py  # ★ Phase 4 — GitHub search + Groq synthesis
 │   ├── personality/
-│   │   └── engine.py              # 5 persona wrappers
+│   │   └── engine.py              # 5 persona wrappers with style injection
 │   └── utils/
 │       └── helpers.py             # Formatting utilities
-├── vscode_extension/              # VS Code sidebar + inline comments
+├── vscode_extension/
 │   ├── src/
-│   │   ├── extension.ts           # Extension entry + 6 commands
-│   │   ├── sidebar.ts             # Dark-themed WebView sidebar
-│   │   ├── chat_panel.ts          # Chat panel
-│   │   └── inline_comments.ts     # ★ Phase 3 LIVE — inline code review comments
-│   └── package.json
+│   │   ├── extension.ts           # Extension entry — 9 commands, status bar, welcome
+│   │   ├── sidebar.ts             # Production sidebar with loading states + capabilities
+│   │   ├── chat_panel.ts          # Persistent chat panel with history
+│   │   └── inline_comments.ts     # Inline code review decorations
+│   ├── media/
+│   │   ├── logo.svg               # Extension icon (SVG)
+│   │   └── logo_dark.svg          # Dark theme icon
+│   └── package.json               # Extension manifest — v0.4.0
 ├── tests/
-│   ├── test_github_scraper.py     # 7 tests, all mocked
+│   ├── test_github_scraper.py     # 7 tests — all mocked
 │   ├── test_personality.py        # 9 tests
-│   ├── test_code_analyzer.py      # Phase 2 tests
-│   ├── test_idea_debater.py       # ★ Phase 3 — 6 tests
-│   └── test_scaffolder.py         # ★ Phase 3 — 7 tests
-├── .env.example                   # Template — copy to .env
+│   ├── test_code_analyzer.py      # Code quality analysis tests
+│   ├── test_idea_debater.py       # Debate system tests
+│   └── test_scaffolder.py         # Scaffolder tests
+├── .env.example                   # Copy to .env and fill your keys
 ├── requirements.txt
 └── pyproject.toml
 ```
+
+---
+
+## 🛠️ MCP Tools Reference
+
+| Tool | Phase | Inputs | What It Does |
+|------|-------|--------|--------------|
+| `analyze_developer` | 1 ✅ | `username`, `personality` | Full GitHub profile roast with real data |
+| `set_personality` | 1 ✅ | `personality` | Switch roast mode for the session |
+| `ask_followup` | 1 ✅ | `question` | Follow-up Q&A without re-fetching GitHub |
+| `clear_session` | 1 ✅ | — | Clear session cache and conversation history |
+| `analyze_code_quality` | 2 ✅ | `username`, `personality`, `max_repos` | pylint + radon + AST across repos |
+| `stress_test_idea` | 3 ✅ | `idea`, `context`, `personality` | 3-agent debate (Believer / Destroyer / Judge) |
+| `scaffold_project` | 3 ✅ | `idea`, `create_repo`, `personality` | Full project scaffold + optional GitHub repo |
+| `research_competitors` | 4 ✅ | `idea`, `personality` | GitHub Search + competitor analysis + your wedge |
+
+---
+
+## 🏗️ Architecture
+
+<div align="center">
+<img src="assets/architecture.svg" alt="GitRoast Architecture" width="90%"/>
+</div>
+
+---
+
+## ⚙️ Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GROQ_API_KEY` | required | Free at [console.groq.com](https://console.groq.com) — no credit card |
+| `GITHUB_TOKEN` | recommended | 5,000 req/hr vs 60/hr without — get at [github.com/settings/tokens](https://github.com/settings/tokens) |
+| `GROQ_MODEL` | `llama3-70b-8192` | Groq model — free tier model |
+| `DEBUG` | `true` | Enable debug logging via loguru |
 
 ---
 
@@ -252,101 +397,31 @@ pytest tests/ --cov=mcp_server --cov-report=term-missing
 
 ---
 
-## 🛠️ Running the Scraper Directly (CLI)
+## 🛠️ Running Modules Directly (CLI)
 
 ```bash
-# Test the scraper standalone — analyzes a real profile
+# Test the scraper standalone
 python -m mcp_server.tools.github_scraper
-# Default: analyzes "torvalds" — edit the __main__ block to change
 
-# Run the full MCP server (stdio mode for agent connections)
+# Test the competitor researcher
+python -m mcp_server.tools.competitor_researcher
+
+# Test the idea debater
+python -m mcp_server.tools.idea_debater
+
+# Run the full MCP server (stdio mode)
 python -m mcp_server.server
 ```
-
----
-
-## ⚙️ Configuration
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `GROQ_API_KEY` | required | Free at [console.groq.com](https://console.groq.com) |
-| `GROQ_MODEL` | `llama3-70b-8192` | Groq model to use |
-| `GITHUB_TOKEN` | optional | 5,000 req/hr vs 60/hr without |
-| `MCP_SERVER_HOST` | `localhost` | Server host |
-| `MCP_SERVER_PORT` | `8765` | Server port |
-| `DEBUG` | `true` | Enable debug logging |
-
----
-
-## 🔌 MCP Tools Reference
-
-| Tool | Phase | Inputs | Description |
-|------|-------|--------|-------------|
-| `analyze_developer` | 1 ✅ | `username`, `personality` | Full GitHub roast |
-| `set_personality` | 1 ✅ | `personality` | Switch roast mode |
-| `ask_followup` | 1 ✅ | `question` | Follow-up without re-fetch |
-| `clear_session` | 1 ✅ | — | Clear cache + history |
-| `analyze_code_quality` | 2 ✅ | `username`, `personality`, `max_repos` | Static analysis — pylint, radon, AST |
-| `stress_test_idea` | 3 ✅ | `idea`, `context`, `personality` | Multi-agent debate (Believer/Destroyer/Judge) |
-| `scaffold_project` | 3 ✅ | `idea`, `create_repo`, `personality` | Full project scaffold + optional GitHub repo |
-| `research_competitors` | 4 🔜 | `idea` | Market intelligence |
 
 ---
 
 ## 🗺️ Roadmap
 
 - [x] **Phase 1** — GitHub scraper, roast engine, MCP server, 5 personalities, VS Code skeleton
-- [x] **Phase 2** — Code quality analyzer ✅ (pylint + radon + AST, scored 1-10 per repo; VS Code extension UI)
-- [x] **Phase 3** — Idea Stress Tester + Project Scaffolder ✅
-- [ ] **Phase 4** — Competitor researcher + advanced scaffolding
-- [ ] **Phase 5** — Full VS Code extension: real-time roasting, deeper AI integration
-
----
-
-## 🎭 The Debate Arena
-
-GitRoast's **Idea Stress Tester** is a 3-agent multi-AI debate system. You pitch your idea. Three distinct agents argue it to death.
-
-```
-User pitches idea
-      ↓
-🟢 Agent 1: The Believer   → "Here's every reason this could WIN"
-🔴 Agent 2: The Destroyer  → "Here's every reason this will FAIL"
-      ↓
-⚖️  Agent 3: The Judge     → Verdict + Refined Idea + Next Steps
-```
-
-**Sample output:**
-
-```
-## 🟢 The Case FOR: "AI-powered todo app"
-### The Unfair Advantage
-The $47B productivity market hasn't seen a tool that learns
-your actual work patterns — not just stores your tasks.
-
-Confidence Score: 8/10
-
----
-
-## 🔴 The Case AGAINST: "AI-powered todo app"
-### The Graveyard
-Todoist, Any.do, Things 3 — all profitable, all deep-moated.
-"AI" doesn't help you finish the tasks on the list.
-
-Confidence Score: 7/10
-
----
-
-## ⚖️ The Verdict: VALIDATE FIRST
-The Destroyer won on market saturation, but missed the B2B angle.
-Refined idea: AI that integrates with Jira/Linear to auto-prioritize
-from real engineering tickets, not a blank list.
-
-Next Steps:
-1. Interview 10 engineering managers this week
-2. Build a no-code demo in Notion
-3. Measure if they'd pay $20/seat
-```
+- [x] **Phase 2** — Code quality analyzer: pylint + radon + AST, scored 1-10 per repo; VS Code extension UI
+- [x] **Phase 3** — Idea Stress Tester (3-agent debate) + Project Scaffolder
+- [x] **Phase 4** — Competitor Researcher (GitHub Search + Groq synthesis) + VS Code polish + SVG assets + production README
+- [ ] **Phase 5** — Real-time file watching, team-mode roasting, Slack/Discord integration
 
 ---
 
@@ -355,19 +430,23 @@ Next Steps:
 Contributions are welcome! This is an open, community-driven project.
 
 ```bash
+# Fork and clone
 git checkout -b feature/your-feature-name
+
 # Make your changes
-pytest tests/ -v          # All tests must pass
+pytest tests/ -v   # All tests must pass
+
 git commit -m "feat: add your feature with a real commit message"
 git push origin feature/your-feature-name
 # Open a PR — describe what you did and why
 ```
 
 **Good first issues:**
-- Adding more bad commit message patterns to `BAD_MESSAGES`
-- Adding a new roast ammunition condition
-- Improving README quality scoring heuristics
-- Adding a new personality mode
+- Add more bad commit message patterns to `BAD_MESSAGES` in `github_scraper.py`
+- Add a new personality mode to `personality/engine.py`
+- Improve the competitor weakness detection heuristics
+- Add a new differentiation angle detector
+- Write tests for `competitor_researcher.py`
 
 ---
 
@@ -377,15 +456,18 @@ MIT — see [LICENSE](LICENSE). Use it, fork it, ship it. Just don't make it mea
 
 ---
 
-## 🙏 Acknowledgments
+## 🙏 Built With
 
-Built with:
-- [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) — the protocol that makes this work
-- [Groq](https://console.groq.com) — blazing fast, genuinely free LLM inference
-- [PyGithub](https://github.com/PyGithub/PyGithub) — GitHub API wrapper
-- [Pydantic v2](https://docs.pydantic.dev) — data validation
-- [Rich](https://github.com/Textualize/rich) — beautiful terminal output
-- [Loguru](https://github.com/Delgan/loguru) — structured logging
+| Tool | Role |
+|------|------|
+| [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) | Protocol that makes this work with any AI agent |
+| [Groq](https://console.groq.com) | Blazing fast, genuinely free LLM inference (llama3-70b-8192) |
+| [PyGitHub](https://github.com/PyGithub/PyGithub) | GitHub API wrapper — profile scraping + search |
+| [Pydantic v2](https://docs.pydantic.dev) | Data validation for all models |
+| [Rich](https://github.com/Textualize/rich) | Beautiful terminal output and status displays |
+| [Loguru](https://github.com/Delgan/loguru) | Structured logging throughout |
+| [pylint](https://pylint.readthedocs.io) | Static analysis for code quality scoring |
+| [radon](https://radon.readthedocs.io) | Cyclomatic complexity analysis |
 
 ---
 
@@ -394,5 +476,7 @@ Built with:
 **Built with 🔥 by developers who have seen too many `git commit -m "fix"` messages.**
 
 *GitRoast roasts you because it cares.*
+
+[![Star this repo](https://img.shields.io/github/stars/yourusername/gitroast?style=social)](https://github.com/yourusername/gitroast)
 
 </div>
