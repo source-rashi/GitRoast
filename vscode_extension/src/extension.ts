@@ -372,49 +372,22 @@ export function activate(context: vscode.ExtensionContext): void {
     statusBarItem = createStatusBar();
     context.subscriptions.push(statusBarItem);
 
-    // Auto-start if path is configured
+    // Auto-detect server path:
+    // 1. Use explicit user setting if set
+    // 2. Fall back to the parent of the vscode_extension folder (the gitroast root)
     const config = vscode.workspace.getConfiguration('gitroast');
-    const serverPath: string = config.get('mcpServerPath', '');
+    const configuredPath: string = config.get('mcpServerPath', '');
 
-    if (serverPath) {
-        mcpClient.start(serverPath);
-    } else {
-        // First-activation welcome notification
-        const isFirstTime = !context.globalState.get('gitroast.welcomed');
-        if (isFirstTime) {
-            context.globalState.update('gitroast.welcomed', true);
-            vscode.window
-                .showInformationMessage(
-                    '🔥 Welcome to GitRoast! Configure your MCP server path to get started.',
-                    'Configure Now',
-                    'Learn More'
-                )
-                .then((choice) => {
-                    if (choice === 'Configure Now') {
-                        vscode.commands.executeCommand(
-                            'workbench.action.openSettings',
-                            'gitroast.mcpServerPath'
-                        );
-                    } else if (choice === 'Learn More') {
-                        vscode.commands.executeCommand('gitroast.showWelcome');
-                    }
-                });
-        } else {
-            vscode.window
-                .showWarningMessage(
-                    'GitRoast: MCP server path not configured.',
-                    'Configure Path'
-                )
-                .then((choice) => {
-                    if (choice === 'Configure Path') {
-                        vscode.commands.executeCommand(
-                            'workbench.action.openSettings',
-                            'gitroast.mcpServerPath'
-                        );
-                    }
-                });
-        }
-    }
+    // The extension lives at: <gitroast_root>/vscode_extension
+    // So its parent is the gitroast root which contains mcp_server/
+    const extensionDir = context.extensionPath; // e.g. .../gitroast/vscode_extension
+    const autoDetectedPath = path.dirname(extensionDir); // e.g. .../gitroast
+
+    const serverPath = configuredPath || autoDetectedPath;
+    outputChannel.appendLine(`[GitRoast] Using server path: ${serverPath}`);
+
+    // Always start — serverPath is guaranteed to be set (either from settings or auto-detected)
+    mcpClient.start(serverPath);
 
     // Register sidebar
     const sidebarProvider = new GitRoastSidebarProvider(context.extensionUri, mcpClient);
