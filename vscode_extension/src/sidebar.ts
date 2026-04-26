@@ -128,8 +128,8 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       --focus: var(--vscode-focusBorder, #f9e2af);
       --btn2-bg: var(--vscode-button-secondaryBackground, #313244);
       --btn2-fg: var(--vscode-button-secondaryForeground, #cdd6f4);
-      --accent: #f97316;
-      --accent2: #facc15;
+      --accent: #8b5cf6;
+      --accent2: #c084fc;
     }
 
     body {
@@ -181,7 +181,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      box-shadow: 0 2px 8px rgba(249,115,22,0.25);
+      box-shadow: 0 2px 8px rgba(139,92,246,0.30);
     }
     .brand-text {
       font-size: 18px;
@@ -236,7 +236,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    input[type="text"], input[type="number"], select {
+    input[type="text"], input[type="number"] {
       width: 100%;
       padding: 8px 10px;
       background: var(--input-bg);
@@ -248,9 +248,47 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
+      box-shadow: 0 0 0 2px rgba(139,92,246,0.20);
+    }
+
+    /* ---- CUSTOM SELECT ---- */
+    .select-wrapper {
+      position: relative;
+    }
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      color: var(--fg-dim);
+      pointer-events: none;
+    }
+    select {
+      width: 100%;
+      padding: 8px 30px 8px 10px;
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      font-size: var(--vscode-font-size, 13px);
+      font-family: inherit;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(139,92,246,0.20);
+    }
+    select option {
+      background: var(--input-bg);
+      color: var(--input-fg);
     }
 
     /* ---- BUTTONS ---- */
@@ -269,12 +307,12 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       transition: all 0.2s ease;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #ea580c);
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+      box-shadow: 0 2px 8px rgba(139,92,246,0.35);
     }
     .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+      box-shadow: 0 4px 16px rgba(139,92,246,0.50);
       transform: translateY(-1px);
     }
     .btn-primary:active { transform: translateY(0); }
@@ -404,7 +442,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       max-height: 0;
       transition: max-height 0.3s ease;
     }
-    .cap-list.open { max-height: 300px; }
+    .cap-list.open { max-height: 500px; }
     .cap-item {
       display: flex;
       align-items: flex-start;
@@ -416,7 +454,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       flex-shrink: 0;
       width: 24px; height: 24px;
       border-radius: 6px;
-      background: rgba(249,115,22,0.1);
+      background: rgba(139,92,246,0.12);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -452,14 +490,16 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="text" id="usernameInput" placeholder="e.g. torvalds" autocomplete="off" spellcheck="false" />
   </div>
   <div class="section">
-    <label class="section-label" for="personalitySelect">Personality</label>
-    <select id="personalitySelect">
-      <option value="comedian">&#x1f3a4; Stand-up Comedian</option>
-      <option value="yc_founder">&#x1f680; YC Co-Founder</option>
-      <option value="senior_dev">&#x1f624; Senior Developer</option>
-      <option value="zen_mentor">&#x1f9d8; Zen Mentor</option>
-      <option value="stranger">&#x1f47b; Anonymous Stranger</option>
-    </select>
+    <label class="section-label" for="personalitySelect">Roast Personality</label>
+    <div class="select-wrapper">
+      <select id="personalitySelect">
+        <option value="comedian">&#x1f3a4; Stand-up Comedian</option>
+        <option value="yc_founder">&#x1f680; YC Co-Founder</option>
+        <option value="senior_dev">&#x1f624; Senior Developer</option>
+        <option value="zen_mentor">&#x1f9d8; Zen Mentor</option>
+        <option value="stranger">&#x1f47b; Anonymous Stranger</option>
+      </select>
+    </div>
   </div>
   <div class="section">
     <button class="btn btn-primary" id="roastBtn">&#x1f525; Roast This Dev</button>
@@ -490,15 +530,38 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   <div class="cap-section">
     <div class="cap-header" id="capHeader">
-      <span>Capabilities</span>
-      <span class="cap-toggle" id="capToggle">&#x25BC;</span>
+      <span>What GitRoast Can Do</span>
+      <span class="cap-toggle open" id="capToggle">&#x25BC;</span>
     </div>
-    <div class="cap-list" id="capList">
-      <div class="cap-item"><div class="cap-icon">&#x1f50d;</div><div><div class="cap-name">Profile Roast</div><div class="cap-desc">Full roast from real commits, PRs &amp; issues</div></div></div>
-      <div class="cap-item"><div class="cap-icon">&#x1f52c;</div><div><div class="cap-name">Code Quality</div><div class="cap-desc">pylint + radon + AST analysis</div></div></div>
-      <div class="cap-item"><div class="cap-icon">&#x1f9e0;</div><div><div class="cap-name">Stress Test Ideas</div><div class="cap-desc">3-agent debate: Believer vs Destroyer vs Judge</div></div></div>
-      <div class="cap-item"><div class="cap-icon">&#x1f3d7;</div><div><div class="cap-name">Scaffold Projects</div><div class="cap-desc">Folder structure + tech stack + roadmap</div></div></div>
-      <div class="cap-item"><div class="cap-icon">&#x1f575;</div><div><div class="cap-name">Research Competitors</div><div class="cap-desc">GitHub intelligence + differentiation wedge</div></div></div>
+    <div class="cap-list open" id="capList">
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f525;</div>
+        <div><div class="cap-name">Profile Roast</div><div class="cap-desc">Full roast from real commits, PRs &amp; issues</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f52c;</div>
+        <div><div class="cap-name">Code Quality</div><div class="cap-desc">pylint + radon + AST analysis across repos</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f9e0;</div>
+        <div><div class="cap-name">Debate Ideas</div><div class="cap-desc">3-agent debate: Believer &#x2022; Destroyer &#x2022; Judge</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x2696;&#xfe0f;</div>
+        <div><div class="cap-name">Idea Stress Test</div><div class="cap-desc">Structured evaluation across multiple AI agents</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f3d7;</div>
+        <div><div class="cap-name">Scaffold Projects</div><div class="cap-desc">Folder structure + tech stack + 4-week roadmap</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f575;</div>
+        <div><div class="cap-name">Research Competitors</div><div class="cap-desc">GitHub intelligence + differentiation wedge</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f4ac;</div>
+        <div><div class="cap-name">AI Chat Panel</div><div class="cap-desc">Free-form chat with context from your session</div></div>
+      </div>
     </div>
   </div>
 
