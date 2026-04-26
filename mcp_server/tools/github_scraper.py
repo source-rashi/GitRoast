@@ -280,28 +280,18 @@ class GitHubScraper:
                 has_tests = False
                 try:
                     contents = repo.get_contents("")
-                    stack = list(contents)
-                    checked = 0
-                    while stack and checked < 100:
-                        item = stack.pop()
-                        checked += 1
+                    # Only check the root directory to save API calls
+                    for item in contents:
                         if "test" in item.path.lower():
                             has_tests = True
                             break
-                        if item.type == "dir":
-                            try:
-                                stack.extend(repo.get_contents(item.path))
-                            except Exception:
-                                pass
                 except Exception:
                     pass
 
                 # Commit count
                 commit_count = 0
-                try:
-                    commit_count = repo.get_commits().totalCount
-                except Exception:
-                    pass
+                # removed `get_commits().totalCount` because PyGitHub heavily paginates
+                # and causes 120+ second timeouts on large repos like torvalds/linux.
 
                 # Days since last commit
                 days_since = 0
@@ -352,7 +342,9 @@ class GitHubScraper:
         for repo in candidates:
             try:
                 commits = repo.get_commits(since=since)
-                for commit in commits:
+                for i, commit in enumerate(commits):
+                    if i >= 50:
+                        break  # Limit to 50 commits per repo to prevent timeouts
                     try:
                         total_commits += 1
                         msg = commit.commit.message.split("\n")[0].strip()
@@ -426,8 +418,11 @@ class GitHubScraper:
 
         for repo in candidates:
             try:
-                prs = repo.get_pulls(state="all")
-                for pr in prs:
+                # Sort by updated desc to get recent PRs
+                prs = repo.get_pulls(state="all", sort="updated", direction="desc")
+                for i, pr in enumerate(prs):
+                    if i >= 30:
+                        break  # Limit to 30 PRs per repo to prevent timeouts
                     try:
                         total_prs += 1
                         body = pr.body or ""
@@ -480,8 +475,11 @@ class GitHubScraper:
 
         for repo in candidates:
             try:
-                issues = repo.get_issues(state="all")
-                for issue in issues:
+                # Sort by updated desc to get recent issues
+                issues = repo.get_issues(state="all", sort="updated", direction="desc")
+                for i, issue in enumerate(issues):
+                    if i >= 30:
+                        break  # Limit to 30 issues per repo to prevent timeouts
                     try:
                         # Filter out pull requests
                         if hasattr(issue, "pull_request") and issue.pull_request:
