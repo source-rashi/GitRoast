@@ -129,7 +129,7 @@ class GitHubScraper:
     def __init__(self):
         load_dotenv()
         self.token = os.getenv("GITHUB_TOKEN")
-        self.github = Github(self.token) if self.token else Github()
+        self.github = Github(self.token, timeout=10) if self.token else Github(timeout=10)
         self.console = Console(stderr=True)
 
         if not self.token:
