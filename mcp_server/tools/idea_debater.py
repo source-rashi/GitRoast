@@ -11,7 +11,7 @@ Three agents run sequentially using Groq (free tier, no credit card):
 The user watches the debate unfold in real time.
 Each agent's output is streamed back as it completes.
 
-Free tier: Groq llama3-70b-8192, ~14,400 requests/day
+Free tier: Groq llama-3.3-70b-versatile, ~14,400 requests/day
 """
 
 import re
@@ -319,7 +319,7 @@ Rules:
 
         try:
             response = self.groq_client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},
@@ -362,7 +362,7 @@ Rules:
 
         try:
             response = self.groq_client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},

@@ -14,7 +14,7 @@ Tools:
   7. ask_followup            — Follow-up questions without re-fetch
   8. clear_session           — Clear cache and conversation history
 
-LLM: Groq (free, no credit card, llama3-70b-8192)
+LLM: Groq (free, no credit card, llama-3.3-70b-versatile)
 """
 
 import asyncio
@@ -174,7 +174,7 @@ Personality mode: {personality}
 
     try:
         response = groq_client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": ROAST_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -252,7 +252,7 @@ Personality mode: {personality}
 
     try:
         response = groq_client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": CODE_ROAST_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
@@ -649,7 +649,7 @@ async def main():
     # ------------------------------------------------------------------
     console.print(
         "\n[bold red]GitRoast MCP Server v0.4.0 - Online[/bold red]\n"
-        "[dim]LLM: Groq (llama3-70b-8192) - Free tier[/dim]\n"
+        "[dim]LLM: Groq (llama-3.3-70b-versatile) - Free tier[/dim]\n"
         "[bold green]Phase 4 LIVE: Competitor Researcher + VS Code Polish[/bold green]\n"
         "[dim]8 tools registered. Waiting for connections via stdio...[/dim]\n"
     )

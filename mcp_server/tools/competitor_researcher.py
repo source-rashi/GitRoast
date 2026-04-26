@@ -506,7 +506,7 @@ Now synthesize this into a sharp competitor intelligence report following the fo
 
         try:
             response = self.groq_client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": COMPETITOR_SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},

@@ -33,7 +33,7 @@ It doesn't lie. It doesn't guess. It uses **real GitHub data** — commits, PRs,
 - 🏗️ **Full project scaffolds** — folder structure, tech stack, 4-week roadmap
 - 🕵️ **Competitor intelligence** — GitHub Search API, differentiation angles, your wedge
 
-> Built with: Python 3.11+, MCP SDK, PyGitHub, Groq (llama3-70b-8192), Pydantic v2, Rich.  
+> Built with: Python 3.11+, MCP SDK, PyGitHub, Groq (llama-3.3-70b-versatile), Pydantic v2, Rich.  
 > **100% free APIs. No credit card required anywhere.**
 
 ---
@@ -383,7 +383,7 @@ gitroast/
 |----------|---------|-------------|
 | `GROQ_API_KEY` | required | Free at [console.groq.com](https://console.groq.com) — no credit card |
 | `GITHUB_TOKEN` | recommended | 5,000 req/hr vs 60/hr without — get at [github.com/settings/tokens](https://github.com/settings/tokens) |
-| `GROQ_MODEL` | `llama3-70b-8192` | Groq model — free tier model |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model — free tier model |
 | `DEBUG` | `true` | Enable debug logging via loguru |
 
 ---
@@ -470,7 +470,7 @@ MIT — see [LICENSE](LICENSE). Use it, fork it, ship it. Just don't make it mea
 | Tool | Role |
 |------|------|
 | [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) | Protocol that makes this work with any AI agent |
-| [Groq](https://console.groq.com) | Blazing fast, genuinely free LLM inference (llama3-70b-8192) |
+| [Groq](https://console.groq.com) | Blazing fast, genuinely free LLM inference (llama-3.3-70b-versatile) |
 | [PyGitHub](https://github.com/PyGithub/PyGithub) | GitHub API wrapper — profile scraping + search |
 | [Pydantic v2](https://docs.pydantic.dev) | Data validation for all models |
 | [Rich](https://github.com/Textualize/rich) | Beautiful terminal output and status displays |
