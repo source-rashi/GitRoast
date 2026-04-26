@@ -119,7 +119,7 @@ class CodeAnalyzer:
     def __init__(self):
         load_dotenv()
         self.github = Github(os.getenv("GITHUB_TOKEN"))
-        self.console = Console()
+        self.console = Console(stderr=True)
         logger.info("CodeAnalyzer initialized.")
 
     # ------------------------------------------------------------------

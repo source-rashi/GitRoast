@@ -130,7 +130,7 @@ class GitHubScraper:
         load_dotenv()
         self.token = os.getenv("GITHUB_TOKEN")
         self.github = Github(self.token) if self.token else Github()
-        self.console = Console()
+        self.console = Console(stderr=True)
 
         if not self.token:
             logger.warning(

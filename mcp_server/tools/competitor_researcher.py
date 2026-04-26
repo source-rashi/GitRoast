@@ -135,7 +135,7 @@ class CompetitorResearcher:
     def __init__(self, groq_client, github_token: str):
         self.groq_client = groq_client
         self.github = Github(github_token) if github_token else Github()
-        self.console = Console()
+        self.console = Console(stderr=True)
         logger.info("CompetitorResearcher initialized")
 
     async def research(self, idea: str, personality: str = "yc_founder") -> CompetitorReport:

@@ -37,11 +37,17 @@ class GitRoastOrchestrator:
     # ------------------------------------------------------------------
 
     async def get_or_fetch_profile(
-        self, username: str, scraper
+        self, username: str, scraper, force_refresh: bool = False
     ) -> DeveloperProfile:
         """Return cached profile or fetch fresh data from GitHub."""
         key = username.lower()
-        if key in self.session_profiles:
+
+        # Clear conversation history when switching to a different user
+        if self.current_username and self.current_username != key:
+            self.conversation_history.clear()
+            logger.info(f"Switched user from {self.current_username} to {key}, cleared history.")
+
+        if key in self.session_profiles and not force_refresh:
             logger.info(f"Using cached profile for {username}")
             return self.session_profiles[key]
 

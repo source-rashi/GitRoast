@@ -198,7 +198,7 @@ class ProjectScaffolder:
         self.groq_client = groq_client
         self.github_token = github_token
         self.github = Github(github_token) if github_token else None
-        self.console = Console()
+        self.console = Console(stderr=True)
         logger.info("ProjectScaffolder initialized.")
 
     # -----------------------------------------------------------------------

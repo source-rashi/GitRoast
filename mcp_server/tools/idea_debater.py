@@ -199,7 +199,7 @@ Rules:
 
     def __init__(self, groq_client):
         self.groq_client = groq_client
-        self.console = Console()
+        self.console = Console(stderr=True)
         logger.info("IdeaDebater initialized.")
 
     # -----------------------------------------------------------------------

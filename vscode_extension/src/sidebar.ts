@@ -60,7 +60,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
                     vscode.commands.executeCommand('gitroast.clearSession');
                     webviewView.webview.postMessage({
                         type: 'status',
-                        text: '🗑️ Session cleared. Ready to roast again.',
+                        text: 'Session cleared. Ready to roast again.',
                         isLoading: false,
                     });
                     break;
@@ -79,7 +79,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
         } else if (errorMsg) {
             this._view.webview.postMessage({
                 type: 'status',
-                text: `❌ Error: ${errorMsg}`,
+                text: `Error: ${errorMsg}`,
                 isLoading: false,
             });
         } else {
@@ -88,7 +88,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
                 : '';
             this._view.webview.postMessage({
                 type: 'loadingDone',
-                text: `✅ Done — result opened in editor`,
+                text: `Done — result opened in editor`,
                 lastInfo: doneUsername
                     ? `Last roast: ${doneUsername} • ${elapsed}`
                     : '',
@@ -105,7 +105,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
     private _getHtmlContent(): string {
         const connected = this._client?.isRunning ?? false;
-        const statusColor = connected ? '#4caf50' : '#f44336';
+        const statusDot = connected ? '#34d399' : '#f87171';
         const statusLabel = connected ? 'Connected' : 'Disconnected';
 
         return `<!DOCTYPE html>
@@ -117,197 +117,268 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: var(--vscode-sideBar-background, #1e1e2e);
+      --fg: var(--vscode-editor-foreground, #cdd6f4);
+      --fg-dim: var(--vscode-descriptionForeground, #6c7086);
+      --border: var(--vscode-panel-border, #313244);
+      --input-bg: var(--vscode-input-background, #181825);
+      --input-fg: var(--vscode-input-foreground, #cdd6f4);
+      --input-border: var(--vscode-input-border, #45475a);
+      --focus: var(--vscode-focusBorder, #f9e2af);
+      --btn2-bg: var(--vscode-button-secondaryBackground, #313244);
+      --btn2-fg: var(--vscode-button-secondaryForeground, #cdd6f4);
+      --accent: #f97316;
+      --accent2: #facc15;
+    }
+
     body {
-      padding: 10px;
-      color: var(--vscode-editor-foreground);
-      font-family: var(--vscode-font-family);
-      font-size: var(--vscode-font-size);
-      background-color: transparent;
+      padding: 0;
+      color: var(--fg);
+      font-family: var(--vscode-font-family, system-ui, -apple-system, sans-serif);
+      font-size: var(--vscode-font-size, 13px);
+      background: transparent;
+      overflow-x: hidden;
+    }
+
+    .container {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      padding: 16px 12px;
     }
 
     /* ---- HEADER ---- */
     .header {
       text-align: center;
-      padding-bottom: 12px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--vscode-panel-border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
     }
 
-    .logo-text {
-      font-size: calc(var(--vscode-font-size) * 1.5);
-      font-weight: 600;
-      color: var(--vscode-activityBarBadge-background);
-    }
-
-    .subtitle {
-      font-size: calc(var(--vscode-font-size) * 0.9);
-      color: var(--vscode-descriptionForeground);
-      margin-top: 4px;
-    }
-
-    .status-row {
+    .brand {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+    }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.25);
+    }
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.3px;
+    }
+    .tagline {
+      font-size: 11px;
+      color: var(--fg-dim);
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
       gap: 6px;
       margin-top: 8px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 10px;
+      color: ${statusDot};
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      background: rgba(0,0,0,0.15);
+      border: 1px solid rgba(0,0,0,0.1);
     }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .status-pill::before {
+      content: '';
+      width: 6px; height: 6px;
       border-radius: 50%;
-      background: ${statusColor};
+      background: ${statusDot};
+      box-shadow: 0 0 6px ${statusDot};
+      ${connected ? 'animation: pulse 2s infinite;' : ''}
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; box-shadow: 0 0 6px ${statusDot}; }
+      50% { opacity:0.5; box-shadow: 0 0 2px ${statusDot}; }
     }
 
-    .status-label {
-      font-size: calc(var(--vscode-font-size) * 0.9);
-      color: ${statusColor};
-    }
-
-    /* ---- SECTIONS ---- */
-    .section { margin-bottom: 16px; }
-
-    label {
+    /* ---- FORM ---- */
+    .section { margin-bottom: 14px; }
+    .section-label {
       display: block;
-      font-size: calc(var(--vscode-font-size) * 0.9);
-      color: var(--vscode-foreground);
-      margin-bottom: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-
-    input[type="text"],
-    input[type="number"],
-    select {
+    input[type="text"], input[type="number"], select {
       width: 100%;
-      padding: 6px 8px;
-      background: var(--vscode-input-background);
-      color: var(--vscode-input-foreground);
-      border: 1px solid var(--vscode-input-border);
-      font-size: var(--vscode-font-size);
+      padding: 8px 10px;
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      font-size: var(--vscode-font-size, 13px);
+      font-family: inherit;
       outline: none;
-      border-radius: 2px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    select:focus {
-      border: 1px solid var(--vscode-focusBorder);
-      outline: 1px solid var(--vscode-focusBorder);
-      outline-offset: -1px;
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
     }
 
     /* ---- BUTTONS ---- */
     .btn {
       width: 100%;
-      padding: 6px 12px;
+      padding: 9px 14px;
       border: none;
-      border-radius: 2px;
-      font-size: var(--vscode-font-size);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      transition: all 0.2s ease;
     }
-
     .btn-primary {
-      background: var(--vscode-button-background);
-      color: var(--vscode-button-foreground);
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
     }
     .btn-primary:hover {
-      background: var(--vscode-button-hoverBackground);
+      box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+      transform: translateY(-1px);
     }
+    .btn-primary:active { transform: translateY(0); }
 
     .btn-secondary {
-      background: var(--vscode-button-secondaryBackground);
-      color: var(--vscode-button-secondaryForeground);
+      background: var(--btn2-bg);
+      color: var(--btn2-fg);
+      border: 1px solid var(--border);
     }
     .btn-secondary:hover {
-      background: var(--vscode-button-secondaryHoverBackground);
+      border-color: var(--accent);
     }
-
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
     }
 
     .shortcut-hint {
       text-align: center;
-      font-size: calc(var(--vscode-font-size) * 0.85);
-      color: var(--vscode-descriptionForeground);
+      font-size: 10px;
+      color: var(--fg-dim);
       margin-top: 6px;
     }
     .shortcut-hint kbd {
-      background: var(--vscode-editorHoverWidget-background);
-      border: 1px solid var(--vscode-editorHoverWidget-border);
+      background: var(--input-bg);
+      border: 1px solid var(--border);
       border-radius: 3px;
-      padding: 1px 4px;
+      padding: 1px 5px;
+      font-size: 10px;
     }
 
-    /* ---- SESSION ROW ---- */
-    .btn-row {
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .action-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
+      margin-bottom: 14px;
     }
-
-    .btn-small {
-      padding: 4px 8px;
-      border: 1px solid var(--vscode-button-secondaryBackground);
-      border-radius: 2px;
-      font-size: calc(var(--vscode-font-size) * 0.9);
+    .action-btn {
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
-      background: transparent;
-      color: var(--vscode-button-secondaryBackground);
+      background: var(--input-bg);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
       text-align: center;
     }
-    .btn-small:hover {
-      background: var(--vscode-button-secondaryHoverBackground);
-      color: var(--vscode-button-secondaryForeground);
+    .action-btn:hover {
+      border-color: var(--accent);
     }
 
-    /* ---- DIVIDER ---- */
-    .divider { 
-      border: none; 
-      border-top: 1px solid var(--vscode-panel-border); 
-      margin: 16px 0; 
-    }
-
-    /* ---- STATUS AREA ---- */
-    .status-area {
-      background: var(--vscode-textBlockQuote-background);
-      border-left: 3px solid var(--vscode-textBlockQuote-border);
-      padding: 8px 10px;
-      font-size: calc(var(--vscode-font-size) * 0.9);
-      color: var(--vscode-foreground);
+    /* ---- STATUS ---- */
+    .status-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 12px 12px 15px;
+      font-size: 12px;
+      line-height: 1.5;
       min-height: 48px;
+      position: relative;
+      overflow: hidden;
     }
-    .status-area .highlight { color: var(--vscode-textLink-foreground); }
-    .status-area .success { color: var(--vscode-testing-iconPassed); }
-
+    .status-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      border-radius: 3px 0 0 3px;
+    }
+    .status-card .highlight { color: var(--accent); font-weight: 600; }
+    .status-card .success { color: #34d399; font-weight: 600; }
+    .status-card .error { color: #f87171; }
     .last-action {
-      font-size: calc(var(--vscode-font-size) * 0.85);
-      color: var(--vscode-descriptionForeground);
-      margin-top: 4px;
+      font-size: 10px;
+      color: var(--fg-dim);
+      margin-top: 6px;
+      padding-left: 15px;
     }
-
     .loading-dots::after {
       content: '';
       animation: dots 1.4s steps(4, end) infinite;
     }
     @keyframes dots {
-      0%, 20% { content: ''; }
+      0%,20% { content: ''; }
       40% { content: '.'; }
       60% { content: '..'; }
-      80%, 100% { content: '...'; }
+      80%,100% { content: '...'; }
     }
 
-    /* ---- CAPABILITIES SECTION ---- */
-    .capabilities { margin-bottom: 12px; }
-    .capabilities-header {
+    /* ---- CAPABILITIES ---- */
+    .cap-section { margin-bottom: 12px; }
+    .cap-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -315,258 +386,187 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       padding: 6px 0;
       user-select: none;
     }
-    .capabilities-header span {
-      font-size: calc(var(--vscode-font-size) * 0.9);
+    .cap-header span {
+      font-size: 10px;
       text-transform: uppercase;
-      color: var(--vscode-foreground);
+      letter-spacing: 0.5px;
+      color: var(--fg-dim);
+      font-weight: 600;
     }
-    .capabilities-toggle {
-      color: var(--vscode-icon-foreground);
-      transition: transform 0.2s;
+    .cap-toggle {
+      color: var(--fg-dim);
+      transition: transform 0.25s ease;
+      font-size: 10px;
     }
-    .capabilities-toggle.open { transform: rotate(180deg); }
-    .capabilities-list {
+    .cap-toggle.open { transform: rotate(180deg); }
+    .cap-list {
       overflow: hidden;
       max-height: 0;
       transition: max-height 0.3s ease;
     }
-    .capabilities-list.open { max-height: 200px; }
-    
+    .cap-list.open { max-height: 300px; }
     .cap-item {
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      padding: 6px 0;
-      border-top: 1px dotted var(--vscode-panel-border);
+      padding: 7px 0;
+      border-top: 1px solid rgba(128,128,128,0.15);
     }
-    .cap-icon { flex-shrink: 0; }
-    .cap-text { flex: 1; }
-    .cap-name { font-size: calc(var(--vscode-font-size) * 0.9); color: var(--vscode-foreground); }
-    .cap-desc { font-size: calc(var(--vscode-font-size) * 0.85); color: var(--vscode-descriptionForeground); margin-top: 2px; }
+    .cap-icon {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: rgba(249,115,22,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .cap-name { font-size: 12px; font-weight: 500; color: var(--fg); }
+    .cap-desc { font-size: 10px; color: var(--fg-dim); margin-top: 1px; }
 
-    /* ---- FOOTER ---- */
     .footer {
       margin-top: auto;
-      padding-top: 12px;
+      padding-top: 14px;
       text-align: center;
-      font-size: calc(var(--vscode-font-size) * 0.85);
-      color: var(--vscode-descriptionForeground);
-      border-top: 1px solid var(--vscode-panel-border);
+      font-size: 10px;
+      color: var(--fg-dim);
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.3px;
     }
   </style>
 </head>
 <body>
-
-  <!-- HEADER -->
+<div class="container">
   <div class="header">
-    <div class="logo-text">🔥 GitRoast</div>
-    <div class="subtitle">AI Developer Intelligence</div>
-    <div class="status-row">
-      <div class="status-dot"></div>
-      <span class="status-label">${statusLabel}</span>
+    <div class="brand">
+      <div class="brand-icon">&#x1f525;</div>
+      <span class="brand-text">GitRoast</span>
     </div>
-  </div>
-
-  <!-- SECTION 1: Analyze Profile -->
-  <div class="section">
-    <label for="usernameInput">GitHub Username</label>
-    <input
-      type="text"
-      id="usernameInput"
-      placeholder="e.g. torvalds"
-      autocomplete="off"
-      spellcheck="false"
-    />
+    <div class="tagline">AI-Powered Developer Intelligence</div>
+    <div class="status-pill">${statusLabel}</div>
   </div>
 
   <div class="section">
-    <label for="personalitySelect">Personality Mode</label>
+    <label class="section-label" for="usernameInput">GitHub Username</label>
+    <input type="text" id="usernameInput" placeholder="e.g. torvalds" autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="section">
+    <label class="section-label" for="personalitySelect">Personality</label>
     <select id="personalitySelect">
-      <option value="comedian">🎤 Stand-up Comedian</option>
-      <option value="yc_founder">🚀 YC Co-Founder</option>
-      <option value="senior_dev">😤 Senior Developer</option>
-      <option value="zen_mentor">🧘 Zen Mentor</option>
-      <option value="stranger">👻 Anonymous Stranger</option>
+      <option value="comedian">&#x1f3a4; Stand-up Comedian</option>
+      <option value="yc_founder">&#x1f680; YC Co-Founder</option>
+      <option value="senior_dev">&#x1f624; Senior Developer</option>
+      <option value="zen_mentor">&#x1f9d8; Zen Mentor</option>
+      <option value="stranger">&#x1f47b; Anonymous Stranger</option>
     </select>
   </div>
-
   <div class="section">
-    <button class="btn btn-primary" id="roastBtn">🔥 Roast This Dev</button>
-    <div class="shortcut-hint">Or use <kbd style="background:#2d2d2d;border:1px solid #444;border-radius:3px;padding:1px 4px;font-size:10px;">Ctrl+Shift+G</kbd> to analyze</div>
+    <button class="btn btn-primary" id="roastBtn">&#x1f525; Roast This Dev</button>
+    <div class="shortcut-hint">Or press <kbd>Ctrl+Shift+G</kbd></div>
   </div>
 
   <hr class="divider" />
 
-  <!-- SECTION 2: Code Quality -->
   <div class="section">
-    <label for="reposInput">Code Quality — Repos to Analyze (1–5)</label>
-    <input
-      type="number"
-      id="reposInput"
-      min="1"
-      max="5"
-      value="3"
-    />
+    <label class="section-label" for="reposInput">Code Quality &mdash; Repos (1&ndash;5)</label>
+    <input type="number" id="reposInput" min="1" max="5" value="3" />
   </div>
-
   <div class="section">
-    <button class="btn btn-secondary" id="analyzeBtn">🔬 Analyze Code</button>
+    <button class="btn btn-secondary" id="analyzeBtn">&#x1f52c; Analyze Code</button>
   </div>
 
   <hr class="divider" />
 
-  <!-- SECTION 3: Session Controls -->
-  <div class="section">
-    <div class="btn-row">
-      <button class="btn-small" id="chatBtn">💬 Open Chat</button>
-      <button class="btn-small" id="clearBtn">🗑️ Clear Session</button>
-    </div>
+  <div class="action-row">
+    <button class="action-btn" id="chatBtn">&#x1f4ac; Chat</button>
+    <button class="action-btn" id="clearBtn">&#x1f5d1; Clear</button>
   </div>
 
-  <!-- SECTION 4: Status Area -->
-  <div class="status-area" id="statusArea">
-    Ready to roast. Enter a username above.
-  </div>
+  <div class="status-card" id="statusArea">Ready to roast. Enter a username above.</div>
   <div class="last-action" id="lastAction"></div>
 
   <hr class="divider" />
 
-  <!-- SECTION 5: Capabilities (collapsible) -->
-  <div class="capabilities">
-    <div class="capabilities-header" id="capHeader">
-      <span>What Can GitRoast Do?</span>
-      <span class="capabilities-toggle" id="capToggle">▼</span>
+  <div class="cap-section">
+    <div class="cap-header" id="capHeader">
+      <span>Capabilities</span>
+      <span class="cap-toggle" id="capToggle">&#x25BC;</span>
     </div>
-    <div class="capabilities-list" id="capList">
-      <div class="cap-item">
-        <div class="cap-icon">🔍</div>
-        <div class="cap-text">
-          <div class="cap-name">Analyze GitHub Profile</div>
-          <div class="cap-desc">Full roast with real commits, PRs &amp; issue data</div>
-        </div>
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">🔬</div>
-        <div class="cap-text">
-          <div class="cap-name">Code Quality Analysis</div>
-          <div class="cap-desc">pylint + radon complexity + AST secret detection</div>
-        </div>
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">🧠</div>
-        <div class="cap-text">
-          <div class="cap-name">Stress Test An Idea</div>
-          <div class="cap-desc">3-agent debate: Believer vs Destroyer vs Judge</div>
-        </div>
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">🏗️</div>
-        <div class="cap-text">
-          <div class="cap-name">Scaffold A Project</div>
-          <div class="cap-desc">Full folder structure + tech stack + 4-week roadmap</div>
-        </div>
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">🕵️</div>
-        <div class="cap-text">
-          <div class="cap-name">Research Competitors</div>
-          <div class="cap-desc">GitHub search intelligence + differentiation wedge</div>
-        </div>
-      </div>
+    <div class="cap-list" id="capList">
+      <div class="cap-item"><div class="cap-icon">&#x1f50d;</div><div><div class="cap-name">Profile Roast</div><div class="cap-desc">Full roast from real commits, PRs &amp; issues</div></div></div>
+      <div class="cap-item"><div class="cap-icon">&#x1f52c;</div><div><div class="cap-name">Code Quality</div><div class="cap-desc">pylint + radon + AST analysis</div></div></div>
+      <div class="cap-item"><div class="cap-icon">&#x1f9e0;</div><div><div class="cap-name">Stress Test Ideas</div><div class="cap-desc">3-agent debate: Believer vs Destroyer vs Judge</div></div></div>
+      <div class="cap-item"><div class="cap-icon">&#x1f3d7;</div><div><div class="cap-name">Scaffold Projects</div><div class="cap-desc">Folder structure + tech stack + roadmap</div></div></div>
+      <div class="cap-item"><div class="cap-icon">&#x1f575;</div><div><div class="cap-name">Research Competitors</div><div class="cap-desc">GitHub intelligence + differentiation wedge</div></div></div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    GitRoast v0.4.0 &nbsp;•&nbsp; Free Forever &nbsp;•&nbsp; MCP Powered
-  </div>
+  <div class="footer">GitRoast v0.4.0 &nbsp;&bull;&nbsp; Free Forever &nbsp;&bull;&nbsp; MCP Powered</div>
+</div>
 
-  <script>
-    const vscode = acquireVsCodeApi();
-    let isLoading = false;
+<script>
+  const vscode = acquireVsCodeApi();
+  let isLoading = false;
 
-    function getUsername() {
-      return document.getElementById('usernameInput').value.trim();
+  function getUsername() { return document.getElementById('usernameInput').value.trim(); }
+
+  function setStatus(text, extraClass) {
+    const el = document.getElementById('statusArea');
+    el.innerHTML = text;
+    el.className = 'status-card' + (extraClass ? ' ' + extraClass : '');
+  }
+
+  function setLastAction(text) { document.getElementById('lastAction').textContent = text; }
+
+  function setButtonsDisabled(disabled) {
+    isLoading = disabled;
+    ['roastBtn','analyzeBtn','chatBtn','clearBtn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = disabled;
+    });
+  }
+
+  document.getElementById('roastBtn').addEventListener('click', () => {
+    const username = getUsername();
+    if (!username) { setStatus('<span class="highlight">Please enter a GitHub username first.</span>'); return; }
+    const personality = document.getElementById('personalitySelect').value;
+    setStatus(\`<span class="highlight">Roasting \${username}</span> as <span class="highlight">\${personality}</span><span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'roast', username, personality });
+  });
+
+  document.getElementById('analyzeBtn').addEventListener('click', () => {
+    const username = getUsername();
+    if (!username) { setStatus('<span class="highlight">Please enter a GitHub username first.</span>'); return; }
+    const maxRepos = document.getElementById('reposInput').value;
+    setStatus(\`Analyzing code for <span class="highlight">\${username}</span> (\${maxRepos} repos)<span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'analyze', username, maxRepos });
+  });
+
+  document.getElementById('chatBtn').addEventListener('click', () => { vscode.postMessage({ command: 'openChat' }); });
+  document.getElementById('clearBtn').addEventListener('click', () => { vscode.postMessage({ command: 'clearSession' }); });
+  document.getElementById('usernameInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isLoading) document.getElementById('roastBtn').click();
+  });
+
+  document.getElementById('capHeader').addEventListener('click', () => {
+    document.getElementById('capList').classList.toggle('open');
+    document.getElementById('capToggle').classList.toggle('open');
+  });
+
+  window.addEventListener('message', (event) => {
+    const msg = event.data;
+    if (msg.type === 'status') { setStatus(msg.text); setButtonsDisabled(false); }
+    else if (msg.type === 'loadingStart') { setStatus(\`\${msg.text}<span class="loading-dots"></span>\`); setButtonsDisabled(true); }
+    else if (msg.type === 'loadingDone') {
+      setStatus(\`<span class="success">\${msg.text}</span>\`);
+      if (msg.lastInfo) setLastAction(msg.lastInfo);
+      setButtonsDisabled(false);
     }
-
-    function setStatus(text, extraClass) {
-      const el = document.getElementById('statusArea');
-      el.innerHTML = text;
-      el.className = 'status-area' + (extraClass ? ' ' + extraClass : '');
-    }
-
-    function setLastAction(text) {
-      document.getElementById('lastAction').textContent = text;
-    }
-
-    function setButtonsDisabled(disabled) {
-      isLoading = disabled;
-      ['roastBtn', 'analyzeBtn', 'chatBtn', 'clearBtn'].forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.disabled = disabled;
-      });
-    }
-
-    document.getElementById('roastBtn').addEventListener('click', () => {
-      const username = getUsername();
-      if (!username) {
-        setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>');
-        return;
-      }
-      const personality = document.getElementById('personalitySelect').value;
-      setStatus(\`⏳ <span class="highlight">Roasting \${username}</span> as <span class="highlight">\${personality}</span><span class="loading-dots"></span>\`, 'loading');
-      setButtonsDisabled(true);
-      vscode.postMessage({ command: 'roast', username, personality });
-    });
-
-    document.getElementById('analyzeBtn').addEventListener('click', () => {
-      const username = getUsername();
-      if (!username) {
-        setStatus('<span class="highlight">⚠️ Please enter a GitHub username first.</span>');
-        return;
-      }
-      const maxRepos = document.getElementById('reposInput').value;
-      setStatus(\`⏳ Analyzing code quality for <span class="highlight">\${username}</span> (\${maxRepos} repos)<span class="loading-dots"></span>\`, 'loading');
-      setButtonsDisabled(true);
-      vscode.postMessage({ command: 'analyze', username, maxRepos });
-    });
-
-    document.getElementById('chatBtn').addEventListener('click', () => {
-      vscode.postMessage({ command: 'openChat' });
-    });
-
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      vscode.postMessage({ command: 'clearSession' });
-    });
-
-    document.getElementById('usernameInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !isLoading) document.getElementById('roastBtn').click();
-    });
-
-    // Capabilities toggle
-    document.getElementById('capHeader').addEventListener('click', () => {
-      const list = document.getElementById('capList');
-      const toggle = document.getElementById('capToggle');
-      list.classList.toggle('open');
-      toggle.classList.toggle('open');
-    });
-
-    // Handle messages from extension host
-    window.addEventListener('message', (event) => {
-      const msg = event.data;
-      if (msg.type === 'status') {
-        setStatus(msg.text);
-        setButtonsDisabled(false);
-      } else if (msg.type === 'loadingStart') {
-        setStatus(\`⏳ \${msg.text}<span class="loading-dots"></span>\`, 'loading');
-        setButtonsDisabled(true);
-      } else if (msg.type === 'loadingDone') {
-        setStatus(\`<span class="success">\${msg.text}</span>\`);
-        if (msg.lastInfo) setLastAction(msg.lastInfo);
-        setButtonsDisabled(false);
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>`;
     }

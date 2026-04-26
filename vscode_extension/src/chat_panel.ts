@@ -22,7 +22,7 @@ export class ChatPanel {
 
         const panel = vscode.window.createWebviewPanel(
             ChatPanel.viewType,
-            'GitRoast Chat 🔥',
+            'GitRoast Chat',
             column,
             {
                 enableScripts: true,
@@ -88,12 +88,25 @@ export class ChatPanel {
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: var(--vscode-editor-background, #1e1e2e);
+      --bg-alt: var(--vscode-sideBar-background, #181825);
+      --fg: var(--vscode-editor-foreground, #cdd6f4);
+      --fg-dim: var(--vscode-descriptionForeground, #6c7086);
+      --border: var(--vscode-panel-border, #313244);
+      --input-bg: var(--vscode-input-background, #181825);
+      --input-fg: var(--vscode-input-foreground, #cdd6f4);
+      --input-border: var(--vscode-input-border, #45475a);
+      --accent: #f97316;
+      --accent2: #facc15;
+    }
+
     html, body {
       height: 100%;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-      background: #1e1e1e;
-      color: #cccccc;
-      font-size: 13px;
+      font-family: var(--vscode-font-family, system-ui, -apple-system, sans-serif);
+      font-size: var(--vscode-font-size, 13px);
+      background: var(--bg);
+      color: var(--fg);
     }
 
     .chat-container {
@@ -104,55 +117,87 @@ export class ChatPanel {
 
     /* ---- HEADER ---- */
     .chat-header {
-      padding: 12px 16px;
-      background: #252526;
-      border-bottom: 1px solid #333;
+      padding: 14px 20px;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .chat-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    }
+
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.25);
       flex-shrink: 0;
     }
 
-    .chat-header-title {
-      font-size: 14px;
+    .header-info { flex: 1; }
+    .header-title {
+      font-size: 15px;
       font-weight: 700;
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
-    .chat-header-sub {
+    .header-sub {
       font-size: 11px;
-      color: #666;
+      color: var(--fg-dim);
+      margin-top: 1px;
     }
 
     /* ---- MESSAGES ---- */
     #messages {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       scroll-behavior: smooth;
     }
 
     .msg {
-      max-width: 85%;
-      border-radius: 12px;
-      padding: 10px 14px;
-      line-height: 1.55;
+      max-width: 82%;
+      border-radius: 14px;
+      padding: 12px 16px;
+      line-height: 1.6;
       word-wrap: break-word;
       white-space: pre-wrap;
+      font-size: 13px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .msg-user {
       align-self: flex-end;
-      background: #ff6b35;
-      color: #111;
-      border-bottom-right-radius: 3px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: #fff;
+      border-bottom-right-radius: 4px;
       font-weight: 500;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.2);
     }
 
     .msg-bot-wrapper {
@@ -160,117 +205,131 @@ export class ChatPanel {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      max-width: 85%;
+      max-width: 82%;
     }
 
     .msg-bot-label {
       font-size: 10px;
-      color: #888;
+      color: var(--fg-dim);
       font-weight: 600;
       letter-spacing: 0.5px;
-      padding-left: 2px;
+      padding-left: 4px;
+      text-transform: uppercase;
     }
 
     .msg-bot {
-      background: #2d2d2d;
-      color: #cccccc;
-      border-bottom-left-radius: 3px;
-      border: 1px solid #3a3a3a;
+      background: var(--bg-alt);
+      color: var(--fg);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
     }
 
     .msg-error {
-      background: #4a1a1a;
-      color: #ff6b6b;
-      border: 1px solid #7a3a3a;
+      background: rgba(248,113,113,0.1);
+      color: #f87171;
+      border: 1px solid rgba(248,113,113,0.25);
     }
 
     /* ---- TYPING INDICATOR ---- */
     .typing {
       align-self: flex-start;
-      background: #2d2d2d;
-      border: 1px solid #3a3a3a;
-      border-radius: 12px;
-      border-bottom-left-radius: 3px;
-      padding: 10px 14px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+      padding: 12px 16px;
       display: none;
     }
-
-    .typing.visible { display: flex; align-items: center; gap: 4px; }
+    .typing.visible { display: flex; align-items: center; gap: 5px; }
 
     .typing-dot {
-      width: 6px; height: 6px;
+      width: 7px; height: 7px;
       border-radius: 50%;
-      background: #888;
+      background: var(--accent);
+      opacity: 0.5;
       animation: bounce 1.2s infinite;
     }
-
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.3s; }
 
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(-5px); opacity: 1; }
     }
 
     /* ---- INPUT ---- */
-    .input-row {
+    .input-area {
       display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      background: #252526;
-      border-top: 1px solid #333;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--bg-alt);
+      border-top: 1px solid var(--border);
       flex-shrink: 0;
     }
 
     #chatInput {
       flex: 1;
-      padding: 9px 12px;
-      background: #2d2d2d;
-      border: 1px solid #444;
-      border-radius: 6px;
-      color: #cccccc;
+      padding: 10px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: var(--input-fg);
       font-size: 13px;
       outline: none;
       font-family: inherit;
       resize: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.4;
+    }
+    #chatInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
+    }
+    #chatInput::placeholder {
+      color: var(--fg-dim);
     }
 
-    #chatInput:focus { border-color: #ff6b35; }
-
     #sendBtn {
-      padding: 9px 16px;
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
-      color: #111;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
-      transition: opacity 0.15s;
+      transition: all 0.2s;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
     }
-
-    #sendBtn:hover { opacity: 0.88; }
-    #sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #sendBtn:hover {
+      box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+      transform: translateY(-1px);
+    }
+    #sendBtn:active { transform: translateY(0); }
+    #sendBtn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
   </style>
 </head>
 <body>
 <div class="chat-container">
 
   <div class="chat-header">
-    <span style="font-size:20px;">🔥</span>
-    <div>
-      <div class="chat-header-title">GitRoast Chat</div>
-      <div class="chat-header-sub">Ask questions about any analyzed developer</div>
+    <div class="header-icon">&#x1f525;</div>
+    <div class="header-info">
+      <div class="header-title">GitRoast Chat</div>
+      <div class="header-sub">Ask follow-up questions about any analyzed developer</div>
     </div>
   </div>
 
   <div id="messages">
-    <!-- Welcome message -->
     <div class="msg-bot-wrapper">
-      <div class="msg-bot-label">🔥 GitRoast</div>
-      <div class="msg msg-bot">👋 Hey! I'm GitRoast.
+      <div class="msg-bot-label">GitRoast</div>
+      <div class="msg msg-bot">Hey! I'm GitRoast.
 
 Analyze a developer from the sidebar first, then ask me anything about their profile — commits, PRs, worst repos, or just roast them harder.
 
@@ -284,7 +343,7 @@ Try: "Which repo is the worst?" or "What should they fix first?"</div>
     <div class="typing-dot"></div>
   </div>
 
-  <div class="input-row">
+  <div class="input-area">
     <textarea
       id="chatInput"
       placeholder="Ask anything about the analyzed developer..."
@@ -317,7 +376,7 @@ Try: "Which repo is the worst?" or "What should they fix first?"</div>
       wrapper.className = 'msg-bot-wrapper';
       const label = document.createElement('div');
       label.className = 'msg-bot-label';
-      label.textContent = '🔥 GitRoast';
+      label.textContent = 'GitRoast';
       const msg = document.createElement('div');
       msg.className = 'msg msg-bot';
       msg.textContent = text;

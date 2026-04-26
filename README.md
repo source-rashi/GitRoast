@@ -66,7 +66,7 @@ It doesn't lie. It doesn't guess. It uses **real GitHub data** — commits, PRs,
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/gitroast.git
+git clone https://github.com/source-rashi/GitRoast.git
 cd gitroast
 
 python -m venv .venv
@@ -125,9 +125,17 @@ Restart Claude Desktop → GitRoast tools appear in the tool list.
 
 ### 5. (Optional) Install the VS Code Extension
 
-Open VS Code in the `vscode_extension/` directory and press `F5` to run in development mode.
+```bash
+cd vscode_extension
+npm install
+npm run compile
+```
 
-In the sidebar, set `gitroast.mcpServerPath` to your GitRoast folder path.
+Open the root `gitroast/` folder in VS Code and press `F5` to launch the Extension Development Host.
+The extension auto-detects the MCP server path — no manual config needed.
+
+> **Note:** The sidebar, chat panel, and all tools work out of the box.
+> Results open as Markdown tabs in your editor.
 
 **Keyboard shortcuts:**
 - `Ctrl+Shift+G` / `Cmd+Shift+G` → Analyze GitHub Profile
@@ -420,7 +428,8 @@ python -m mcp_server.server
 - [x] **Phase 1** — GitHub scraper, roast engine, MCP server, 5 personalities, VS Code skeleton
 - [x] **Phase 2** — Code quality analyzer: pylint + radon + AST, scored 1-10 per repo; VS Code extension UI
 - [x] **Phase 3** — Idea Stress Tester (3-agent debate) + Project Scaffolder
-- [x] **Phase 4** — Competitor Researcher (GitHub Search + Groq synthesis) + VS Code polish + SVG assets + production README
+- [x] **Phase 4** — Competitor Researcher (GitHub Search + Groq synthesis) + SVG assets + production README
+- [x] **Phase 4.1** — MCP protocol fix (JSON-RPC initialize handshake), stdio stream isolation, UI overhaul, per-user session management
 - [ ] **Phase 5** — Real-time file watching, team-mode roasting, Slack/Discord integration
 
 ---
@@ -477,6 +486,6 @@ MIT — see [LICENSE](LICENSE). Use it, fork it, ship it. Just don't make it mea
 
 *GitRoast roasts you because it cares.*
 
-[![Star this repo](https://img.shields.io/github/stars/yourusername/gitroast?style=social)](https://github.com/yourusername/gitroast)
+[![Star this repo](https://img.shields.io/github/stars/source-rashi/GitRoast?style=social)](https://github.com/source-rashi/GitRoast)
 
 </div>
