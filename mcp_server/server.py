@@ -397,12 +397,12 @@ async def handle_research_competitors(
 
 async def main():
     load_dotenv()
-    console = Console()
+    console = Console(stderr=True)
 
     groq_api_key = os.getenv("GROQ_API_KEY")
     if not groq_api_key:
         console.print(
-            "[bold red]❌ GROQ_API_KEY not found![/bold red]\n"
+            "[bold red]X GROQ_API_KEY not found![/bold red]\n"
             "Get a free key at [link=https://console.groq.com]console.groq.com[/link] "
             "(no credit card required), then add it to your .env file:\n\n"
             "  GROQ_API_KEY=your_key_here"
@@ -530,7 +530,7 @@ async def main():
                     "properties": {
                         "idea": {
                             "type": "string",
-                            "description": "Your startup or project idea — describe it in 1-3 sentences",
+                            "description": "Your startup or project idea - describe it in 1-3 sentences",
                         },
                         "context": {
                             "type": "string",
@@ -579,7 +579,7 @@ async def main():
             types.Tool(
                 name="research_competitors",
                 description=(
-                    "Search GitHub for similar projects and generate competitor intelligence — "
+                    "Search GitHub for similar projects and generate competitor intelligence - "
                     "who built what, where they fall short, and what your differentiating wedge is. "
                     "Uses GitHub Search API (free). "
                     "Output: competitor table, differentiation angles, strategic synthesis, and your wedge."
@@ -640,7 +640,7 @@ async def main():
                 result = f"Unknown tool: {name}"
         except Exception as exc:
             logger.exception(f"Error in tool '{name}': {exc}")
-            result = f"❌ Error: {exc}"
+            result = f"X Error: {exc}"
 
         return [types.TextContent(type="text", text=result)]
 
@@ -648,8 +648,8 @@ async def main():
     # Startup banner
     # ------------------------------------------------------------------
     console.print(
-        "\n[bold red]🔥 GitRoast MCP Server v0.4.0 — Online[/bold red]\n"
-        "[dim]LLM: Groq (llama3-70b-8192) — Free tier[/dim]\n"
+        "\n[bold red]GitRoast MCP Server v0.4.0 - Online[/bold red]\n"
+        "[dim]LLM: Groq (llama3-70b-8192) - Free tier[/dim]\n"
         "[bold green]Phase 4 LIVE: Competitor Researcher + VS Code Polish[/bold green]\n"
         "[dim]8 tools registered. Waiting for connections via stdio...[/dim]\n"
     )

@@ -22,6 +22,7 @@ export class GitRoastMCPClient {
     private requestId = 1;
     private outputChannel: vscode.OutputChannel;
     private buffer = '';
+    private initPromise: Promise<void> | null = null;
 
     constructor(outputChannel: vscode.OutputChannel) {
         this.outputChannel = outputChannel;
@@ -33,7 +34,7 @@ export class GitRoastMCPClient {
         this.process = cp.spawn('python', ['-m', 'mcp_server.server'], {
             cwd: serverPath,
             stdio: ['pipe', 'pipe', 'pipe'],
-            env: { ...process.env },
+            env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
         });
 
         if (!this.process.stdout || !this.process.stdin || !this.process.stderr) {
@@ -71,6 +72,7 @@ export class GitRoastMCPClient {
         this.process.on('exit', (code: number | null) => {
             this.outputChannel.appendLine(`[GitRoast] MCP server exited with code ${code}`);
             this.process = null;
+            this.initPromise = null;
             // Reject all pending requests
             this.pendingRequests.forEach((pending) => {
                 clearTimeout(pending.timer);
@@ -80,6 +82,53 @@ export class GitRoastMCPClient {
         });
 
         this.outputChannel.appendLine('[GitRoast] MCP server started.');
+        this.initPromise = this._initializeMCP();
+    }
+
+    private async _initializeMCP(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!this.process || !this.process.stdin) {
+                return reject(new Error('Process not running'));
+            }
+            const id = this.requestId++;
+            const initMsg = JSON.stringify({
+                jsonrpc: '2.0',
+                id,
+                method: 'initialize',
+                params: {
+                    protocolVersion: '2024-11-05',
+                    capabilities: {},
+                    clientInfo: { name: 'gitroast-vscode', version: '0.4.0' }
+                }
+            });
+
+            this.outputChannel.appendLine(`[MCP →] ${initMsg}`);
+            
+            const timer = setTimeout(() => {
+                this.pendingRequests.delete(id);
+                reject(new Error('Init timeout after 60 seconds'));
+            }, 60000);
+            
+            this.pendingRequests.set(id, {
+                resolve: () => {
+                    clearTimeout(timer);
+                    const notif = JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'notifications/initialized'
+                    });
+                    this.outputChannel.appendLine(`[MCP →] ${notif}`);
+                    this.process?.stdin?.write(notif + '\n');
+                    resolve();
+                },
+                reject: (err) => {
+                    clearTimeout(timer);
+                    reject(err);
+                },
+                timer
+            });
+
+            this.process.stdin.write(initMsg + '\n');
+        });
     }
 
     async callTool(toolName: string, args: Record<string, unknown>): Promise<string> {
@@ -87,6 +136,10 @@ export class GitRoastMCPClient {
             throw new Error(
                 'GitRoast MCP server is not running. Set gitroast.mcpServerPath in VS Code settings.'
             );
+        }
+
+        if (this.initPromise) {
+            await this.initPromise;
         }
 
         const id = this.requestId++;
