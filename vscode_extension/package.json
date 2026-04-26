@@ -56,6 +56,21 @@
         "command": "gitroast.showWelcome",
         "title": "GitRoast: Show Welcome Page",
         "icon": "$(info)"
+      },
+      {
+        "command": "gitroast.stressTestIdea",
+        "title": "GitRoast: Stress Test Idea",
+        "icon": "$(law)"
+      },
+      {
+        "command": "gitroast.scaffoldProject",
+        "title": "GitRoast: Scaffold Project",
+        "icon": "$(file-directory-create)"
+      },
+      {
+        "command": "gitroast.researchCompetitors",
+        "title": "GitRoast: Research Competitors",
+        "icon": "$(search)"
       }
     ],
     "keybindings": [

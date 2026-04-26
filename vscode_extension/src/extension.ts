@@ -156,8 +156,8 @@ export class GitRoastMCPClient {
         return new Promise<string>((resolve, reject) => {
             const timer = setTimeout(() => {
                 this.pendingRequests.delete(id);
-                reject(new Error(`Tool '${toolName}' timed out after 120 seconds.`));
-            }, 120_000);
+                reject(new Error(`Tool '${toolName}' timed out after 300 seconds.`));
+            }, 300_000);
             this.pendingRequests.set(id, { resolve, reject, timer });
         });
     }
@@ -635,6 +635,139 @@ export function activate(context: vscode.ExtensionContext): void {
         }
     );
 
+    // ----------------------------------------------------------------
+    // Command: Stress Test Idea
+    // ----------------------------------------------------------------
+    const stressTestIdeaCmd = vscode.commands.registerCommand(
+        'gitroast.stressTestIdea',
+        async (args?: { idea?: string; personality?: string }) => {
+            const client = mcpClient;
+            if (!client) { return; }
+
+            const idea =
+                args?.idea ||
+                (await vscode.window.showInputBox({
+                    prompt: 'Enter your startup/project idea to stress test ⚖️',
+                    placeHolder: 'e.g. A VS Code extension that...',
+                }));
+            if (!idea) { return; }
+
+            const personality = args?.personality || 'yc_founder';
+
+            setStatusBarActive(true);
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `⚖️ GitRoast is debating your idea...`,
+                    cancellable: false,
+                },
+                async () => {
+                    try {
+                        const result = await client.callTool('stress_test_idea', {
+                            idea,
+                            personality,
+                        });
+                        await openInDocument(result, `GitRoast Debate — Idea.md`);
+                    } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
+                    }
+                }
+            );
+        }
+    );
+
+    // ----------------------------------------------------------------
+    // Command: Scaffold Project
+    // ----------------------------------------------------------------
+    const scaffoldProjectCmd = vscode.commands.registerCommand(
+        'gitroast.scaffoldProject',
+        async (args?: { idea?: string; personality?: string }) => {
+            const client = mcpClient;
+            if (!client) { return; }
+
+            const idea =
+                args?.idea ||
+                (await vscode.window.showInputBox({
+                    prompt: 'Enter your idea to scaffold 🏗️',
+                    placeHolder: 'e.g. A VS Code extension that...',
+                }));
+            if (!idea) { return; }
+
+            const personality = args?.personality || 'yc_founder';
+
+            setStatusBarActive(true);
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `🏗️ GitRoast is scaffolding your project...`,
+                    cancellable: false,
+                },
+                async () => {
+                    try {
+                        const result = await client.callTool('scaffold_project', {
+                            idea,
+                            personality,
+                            create_repo: false
+                        });
+                        await openInDocument(result, `GitRoast Scaffold — Idea.md`);
+                    } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
+                    }
+                }
+            );
+        }
+    );
+
+    // ----------------------------------------------------------------
+    // Command: Research Competitors
+    // ----------------------------------------------------------------
+    const researchCompetitorsCmd = vscode.commands.registerCommand(
+        'gitroast.researchCompetitors',
+        async (args?: { idea?: string; personality?: string }) => {
+            const client = mcpClient;
+            if (!client) { return; }
+
+            const idea =
+                args?.idea ||
+                (await vscode.window.showInputBox({
+                    prompt: 'Enter your idea to research competitors 🕵️',
+                    placeHolder: 'e.g. A VS Code extension that...',
+                }));
+            if (!idea) { return; }
+
+            const personality = args?.personality || 'yc_founder';
+
+            setStatusBarActive(true);
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `🕵️ GitRoast is researching competitors...`,
+                    cancellable: false,
+                },
+                async () => {
+                    try {
+                        const result = await client.callTool('research_competitors', {
+                            idea,
+                            personality,
+                        });
+                        await openInDocument(result, `GitRoast Competitors — Idea.md`);
+                    } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
+                    }
+                }
+            );
+        }
+    );
+
     context.subscriptions.push(
         openSidebarCmd,
         showWelcomeCmd,
@@ -643,6 +776,9 @@ export function activate(context: vscode.ExtensionContext): void {
         setPersonalityCmd,
         clearSessionCmd,
         openChatCmd,
+        stressTestIdeaCmd,
+        scaffoldProjectCmd,
+        researchCompetitorsCmd,
     );
 }
 

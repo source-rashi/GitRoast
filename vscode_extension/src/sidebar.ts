@@ -64,6 +64,39 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
                         isLoading: false,
                     });
                     break;
+                case 'stressTest':
+                    this._setLoading(true, `Debating idea...`);
+                    vscode.commands.executeCommand('gitroast.stressTestIdea', {
+                        idea: message.idea,
+                        personality: message.personality,
+                    }).then(() => {
+                        this._setLoading(false, null, 'Idea Debated');
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
+                    });
+                    break;
+                case 'scaffold':
+                    this._setLoading(true, `Scaffolding project...`);
+                    vscode.commands.executeCommand('gitroast.scaffoldProject', {
+                        idea: message.idea,
+                        personality: message.personality,
+                    }).then(() => {
+                        this._setLoading(false, null, 'Project Scaffolded');
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
+                    });
+                    break;
+                case 'research':
+                    this._setLoading(true, `Researching competitors...`);
+                    vscode.commands.executeCommand('gitroast.researchCompetitors', {
+                        idea: message.idea,
+                        personality: message.personality,
+                    }).then(() => {
+                        this._setLoading(false, null, 'Research Complete');
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
+                    });
+                    break;
             }
         });
     }
@@ -516,6 +549,16 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <button class="btn btn-secondary" id="analyzeBtn">&#x1f52c; Analyze Code</button>
   </div>
 
+  <div class="section">
+    <label class="section-label" for="ideaInput">Startup / Project Idea</label>
+    <input type="text" id="ideaInput" placeholder="e.g. VS Code extension for..." autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="action-row" style="grid-template-columns: 1fr 1fr 1fr;">
+    <button class="action-btn" id="stressTestBtn" style="font-size: 10px;">&#x2696;&#xfe0f; Debate</button>
+    <button class="action-btn" id="scaffoldBtn" style="font-size: 10px;">&#x1f3d7; Scaffold</button>
+    <button class="action-btn" id="researchBtn" style="font-size: 10px;">&#x1f575; Research</button>
+  </div>
+
   <hr class="divider" />
 
   <div class="action-row">
@@ -584,7 +627,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   function setButtonsDisabled(disabled) {
     isLoading = disabled;
-    ['roastBtn','analyzeBtn','chatBtn','clearBtn'].forEach(id => {
+    ['roastBtn','analyzeBtn','chatBtn','clearBtn', 'stressTestBtn', 'scaffoldBtn', 'researchBtn'].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) btn.disabled = disabled;
     });
@@ -612,6 +655,39 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
   document.getElementById('clearBtn').addEventListener('click', () => { vscode.postMessage({ command: 'clearSession' }); });
   document.getElementById('usernameInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !isLoading) document.getElementById('roastBtn').click();
+  });
+  
+  function getIdea() { return document.getElementById('ideaInput').value.trim(); }
+
+  document.getElementById('stressTestBtn').addEventListener('click', () => {
+    const idea = getIdea();
+    if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
+    const personality = document.getElementById('personalitySelect').value;
+    setStatus(\`Debating idea...<span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'stressTest', idea, personality });
+  });
+
+  document.getElementById('scaffoldBtn').addEventListener('click', () => {
+    const idea = getIdea();
+    if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
+    const personality = document.getElementById('personalitySelect').value;
+    setStatus(\`Scaffolding project...<span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'scaffold', idea, personality });
+  });
+
+  document.getElementById('researchBtn').addEventListener('click', () => {
+    const idea = getIdea();
+    if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
+    const personality = document.getElementById('personalitySelect').value;
+    setStatus(\`Researching competitors...<span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'research', idea, personality });
+  });
+
+  document.getElementById('ideaInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isLoading) document.getElementById('stressTestBtn').click();
   });
 
   document.getElementById('capHeader').addEventListener('click', () => {
