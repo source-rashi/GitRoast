@@ -319,7 +319,7 @@ export class ChatPanel {
 <div class="chat-container">
 
   <div class="chat-header">
-    <div class="header-icon">&#x25c8;</div>
+    <div class="header-icon" style="font-size:13px;font-weight:800;letter-spacing:-0.5px;">GR</div>
     <div class="header-info">
       <div class="header-title">GitRoast Chat</div>
       <div class="header-sub">Ask follow-up questions about any analyzed developer</div>
