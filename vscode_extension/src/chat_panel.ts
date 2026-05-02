@@ -97,8 +97,8 @@ export class ChatPanel {
       --input-bg: var(--vscode-input-background, #181825);
       --input-fg: var(--vscode-input-foreground, #cdd6f4);
       --input-border: var(--vscode-input-border, #45475a);
-      --accent: #f97316;
-      --accent2: #facc15;
+      --accent: #0077b6;
+      --accent2: #00b4d8;
     }
 
     html, body {
@@ -145,7 +145,7 @@ export class ChatPanel {
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      box-shadow: 0 2px 8px rgba(249,115,22,0.25);
+      box-shadow: 0 2px 8px rgba(0,119,182,0.25);
       flex-shrink: 0;
     }
 
@@ -193,11 +193,11 @@ export class ChatPanel {
 
     .msg-user {
       align-self: flex-end;
-      background: linear-gradient(135deg, var(--accent), #ea580c);
+      background: linear-gradient(135deg, var(--accent), #023e8a);
       color: #fff;
       border-bottom-right-radius: 4px;
       font-weight: 500;
-      box-shadow: 0 2px 8px rgba(249,115,22,0.2);
+      box-shadow: 0 2px 8px rgba(0,119,182,0.2);
     }
 
     .msg-bot-wrapper {
@@ -283,7 +283,7 @@ export class ChatPanel {
     }
     #chatInput:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
+      box-shadow: 0 0 0 2px rgba(0,119,182,0.15);
     }
     #chatInput::placeholder {
       color: var(--fg-dim);
@@ -291,7 +291,7 @@ export class ChatPanel {
 
     #sendBtn {
       padding: 10px 20px;
-      background: linear-gradient(135deg, var(--accent), #ea580c);
+      background: linear-gradient(135deg, var(--accent), #023e8a);
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -300,10 +300,10 @@ export class ChatPanel {
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+      box-shadow: 0 2px 8px rgba(0,119,182,0.3);
     }
     #sendBtn:hover {
-      box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+      box-shadow: 0 4px 16px rgba(0,119,182,0.4);
       transform: translateY(-1px);
     }
     #sendBtn:active { transform: translateY(0); }
@@ -319,7 +319,7 @@ export class ChatPanel {
 <div class="chat-container">
 
   <div class="chat-header">
-    <div class="header-icon">&#x1f525;</div>
+    <div class="header-icon">&#x25c8;</div>
     <div class="header-info">
       <div class="header-title">GitRoast Chat</div>
       <div class="header-sub">Ask follow-up questions about any analyzed developer</div>
