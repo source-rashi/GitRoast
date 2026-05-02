@@ -238,13 +238,13 @@ function getWelcomeHtml(): string {
     .logo-text {
       font-size: 48px;
       font-weight: 900;
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .subtitle { font-size: 16px; color: #888; margin-top: 8px; letter-spacing: 1px; }
-    h2 { color: #ff6b35; font-size: 18px; margin: 28px 0 12px; font-weight: 700; }
+    h2 { color: #0077b6; font-size: 18px; margin: 28px 0 12px; font-weight: 700; }
     .step {
       display: flex;
       gap: 16px;
@@ -256,7 +256,7 @@ function getWelcomeHtml(): string {
       margin-bottom: 10px;
     }
     .step-num {
-      background: linear-gradient(135deg, #ff6b35, #f7c948);
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
       color: #111;
       font-weight: 900;
       font-size: 14px;
@@ -277,7 +277,7 @@ function getWelcomeHtml(): string {
       padding: 2px 6px;
       font-family: 'Consolas', 'Monaco', monospace;
       font-size: 12px;
-      color: #f7c948;
+      color: #00b4d8;
     }
     .tools {
       display: grid;
@@ -306,7 +306,7 @@ function getWelcomeHtml(): string {
       padding: 14px;
       text-align: center;
     }
-    .api-card .api-name { font-size: 14px; font-weight: 700; color: #ff6b35; margin-bottom: 4px; }
+    .api-card .api-name { font-size: 14px; font-weight: 700; color: #0077b6; margin-bottom: 4px; }
     .api-card .api-url { font-size: 11px; color: #888; }
     .badge {
       display: inline-block;
@@ -324,11 +324,11 @@ function getWelcomeHtml(): string {
 </head>
 <body>
   <div class="logo">
-    <div class="logo-text">🔥 GitRoast</div>
+    <div class="logo-text">GitRoast</div>
     <div class="subtitle">AI Developer Intelligence</div>
   </div>
 
-  <h2>🚀 Quick Start (3 steps)</h2>
+  <h2>Quick Start (3 steps)</h2>
 
   <div class="step">
     <div class="step-num">1</div>
@@ -354,42 +354,42 @@ function getWelcomeHtml(): string {
     </div>
   </div>
 
-  <h2>🛠️ Available Commands</h2>
+  <h2>Available Commands</h2>
 
   <div class="tools">
     <div class="tool-card">
-      <div class="icon">🔍</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">PR</div>
       <div class="name">Analyze Profile</div>
       <div class="desc">Roast any GitHub user with real data · Ctrl+Shift+G</div>
     </div>
     <div class="tool-card">
-      <div class="icon">🔬</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">CQ</div>
       <div class="name">Code Quality</div>
       <div class="desc">pylint + radon + AST analysis across repos</div>
     </div>
     <div class="tool-card">
-      <div class="icon">🧠</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">ST</div>
       <div class="name">Stress Test Idea</div>
       <div class="desc">3-agent debate: Believer/Destroyer/Judge</div>
     </div>
     <div class="tool-card">
-      <div class="icon">🏗️</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">SC</div>
       <div class="name">Scaffold Project</div>
       <div class="desc">Full folder structure + 4-week roadmap</div>
     </div>
     <div class="tool-card">
-      <div class="icon">🕵️</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">RC</div>
       <div class="name">Research Competitors</div>
       <div class="desc">GitHub search intelligence + your wedge</div>
     </div>
     <div class="tool-card">
-      <div class="icon">💬</div>
+      <div class="icon" style="font-size:14px;font-weight:700;color:#0077b6;">IC</div>
       <div class="name">Inline Comments</div>
       <div class="desc">AI review comments in your editor · Ctrl+Shift+R</div>
     </div>
   </div>
 
-  <h2>🔑 Get Your Free API Keys</h2>
+  <h2>Get Your Free API Keys</h2>
 
   <div class="api-section">
     <div class="api-card">
@@ -484,17 +484,17 @@ export function activate(context: vscode.ExtensionContext): void {
             const username =
                 args?.username ||
                 (await vscode.window.showInputBox({
-                    prompt: 'Enter a GitHub username to roast 🔥',
+                    prompt: 'Enter a GitHub username to roast',
                     placeHolder: 'e.g. torvalds',
                 }));
             if (!username) { return; }
 
             const personalityItems = [
-                { label: '🎤 Stand-up Comedian', value: 'comedian', description: 'Brutal roast energy' },
-                { label: '🚀 YC Co-Founder', value: 'yc_founder', description: 'Startup intensity' },
-                { label: '😤 Senior Developer', value: 'senior_dev', description: 'Tired veteran energy' },
-                { label: '🧘 Zen Mentor', value: 'zen_mentor', description: 'Tough love with patience' },
-                { label: '👻 Anonymous Stranger', value: 'stranger', description: 'Unfiltered chaos' },
+                { label: 'Comedian — Brutal Roast', value: 'comedian', description: 'Brutal roast energy' },
+                { label: 'YC Founder — Startup Mode', value: 'yc_founder', description: 'Startup intensity' },
+                { label: 'Senior Dev — Veteran', value: 'senior_dev', description: 'Tired veteran energy' },
+                { label: 'Zen Mentor — Tough Love', value: 'zen_mentor', description: 'Tough love with patience' },
+                { label: 'Stranger — Unfiltered', value: 'stranger', description: 'Unfiltered chaos' },
             ];
             const chosen = args?.personality
                 ? personalityItems.find((p) => p.value === args.personality) ?? personalityItems[0]
@@ -509,7 +509,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `🔥 GitRoast is roasting ${username}...`,
+                    title: `GitRoast is roasting ${username}...`,
                     cancellable: false,
                 },
                 async () => {
@@ -553,7 +553,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `🔬 Analyzing code quality for ${username}...`,
+                    title: `Analyzing code quality for ${username}...`,
                     cancellable: false,
                 },
                 async () => {
@@ -584,11 +584,11 @@ export function activate(context: vscode.ExtensionContext): void {
             if (!client) { return; }
 
             const options = [
-                { label: '🎤 Stand-up Comedian', value: 'comedian' },
-                { label: '🚀 YC Co-Founder', value: 'yc_founder' },
-                { label: '😤 Senior Developer', value: 'senior_dev' },
-                { label: '🧘 Zen Mentor', value: 'zen_mentor' },
-                { label: '👻 Anonymous Stranger', value: 'stranger' },
+                { label: 'Comedian — Brutal Roast', value: 'comedian' },
+                { label: 'YC Founder — Startup Mode', value: 'yc_founder' },
+                { label: 'Senior Dev — Veteran', value: 'senior_dev' },
+                { label: 'Zen Mentor — Tough Love', value: 'zen_mentor' },
+                { label: 'Stranger — Unfiltered', value: 'stranger' },
             ];
             const selected = await vscode.window.showQuickPick(options, {
                 placeHolder: 'Choose your roast personality mode',
@@ -598,7 +598,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 const result = await client.callTool('set_personality', {
                     personality: selected.value,
                 });
-                vscode.window.showInformationMessage(`✅ ${result}`);
+                vscode.window.showInformationMessage(`Personality set: ${result}`);
             } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : String(err);
                 vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
@@ -647,7 +647,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const idea =
                 args?.idea ||
                 (await vscode.window.showInputBox({
-                    prompt: 'Enter your startup/project idea to stress test ⚖️',
+                    prompt: 'Enter your startup/project idea to stress test',
                     placeHolder: 'e.g. A VS Code extension that...',
                 }));
             if (!idea) { return; }
@@ -658,7 +658,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `⚖️ GitRoast is debating your idea...`,
+                    title: `GitRoast is debating your idea...`,
                     cancellable: false,
                 },
                 async () => {
@@ -691,7 +691,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const idea =
                 args?.idea ||
                 (await vscode.window.showInputBox({
-                    prompt: 'Enter your idea to scaffold 🏗️',
+                    prompt: 'Enter your idea to scaffold',
                     placeHolder: 'e.g. A VS Code extension that...',
                 }));
             if (!idea) { return; }
@@ -702,7 +702,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `🏗️ GitRoast is scaffolding your project...`,
+                    title: `GitRoast is scaffolding your project...`,
                     cancellable: false,
                 },
                 async () => {
@@ -736,7 +736,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const idea =
                 args?.idea ||
                 (await vscode.window.showInputBox({
-                    prompt: 'Enter your idea to research competitors 🕵️',
+                    prompt: 'Enter your idea to research competitors',
                     placeHolder: 'e.g. A VS Code extension that...',
                 }));
             if (!idea) { return; }
@@ -747,7 +747,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `🕵️ GitRoast is researching competitors...`,
+                    title: `GitRoast is researching competitors...`,
                     cancellable: false,
                 },
                 async () => {
@@ -780,17 +780,17 @@ export function activate(context: vscode.ExtensionContext): void {
             const usernames =
                 args?.usernames ||
                 (await vscode.window.showInputBox({
-                    prompt: 'Enter GitHub usernames (comma-separated) to team roast 👥',
+                    prompt: 'Enter GitHub usernames (comma-separated) to team roast',
                     placeHolder: 'e.g. alice,bob,charlie',
                 }));
             if (!usernames) { return; }
 
             const personalityItems = [
-                { label: '🎤 Stand-up Comedian', value: 'comedian' },
-                { label: '🚀 YC Co-Founder', value: 'yc_founder' },
-                { label: '😤 Senior Developer', value: 'senior_dev' },
-                { label: '🧘 Zen Mentor', value: 'zen_mentor' },
-                { label: '👻 Anonymous Stranger', value: 'stranger' },
+                { label: 'Comedian — Brutal Roast', value: 'comedian' },
+                { label: 'YC Founder — Startup Mode', value: 'yc_founder' },
+                { label: 'Senior Dev — Veteran', value: 'senior_dev' },
+                { label: 'Zen Mentor — Tough Love', value: 'zen_mentor' },
+                { label: 'Stranger — Unfiltered', value: 'stranger' },
             ];
             const chosen = args?.personality
                 ? personalityItems.find((p) => p.value === args.personality) ?? personalityItems[0]
@@ -804,7 +804,7 @@ export function activate(context: vscode.ExtensionContext): void {
             await vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: `👥 GitRoast is team-roasting...`,
+                    title: `GitRoast is team-roasting...`,
                     cancellable: false,
                 },
                 async () => {
@@ -859,7 +859,7 @@ export function activate(context: vscode.ExtensionContext): void {
                         path: watchPath,
                     });
                     fileWatcherActive = true;
-                    vscode.window.showInformationMessage(`👁️ File Watcher enabled for: ${watchPath}`);
+                    vscode.window.showInformationMessage(`File Watcher enabled for: ${watchPath}`);
                 } catch (err: unknown) {
                     const msg = err instanceof Error ? err.message : String(err);
                     vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
