@@ -2,7 +2,7 @@
   "name": "gitroast",
   "displayName": "GitRoast — AI Developer Intelligence",
   "description": "AI-powered developer roasting, code analysis, idea stress-testing, and competitor research via MCP",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "gitroast",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["AI", "Other"],
@@ -71,6 +71,16 @@
         "command": "gitroast.researchCompetitors",
         "title": "GitRoast: Research Competitors",
         "icon": "$(search)"
+      },
+      {
+        "command": "gitroast.roastTeam",
+        "title": "GitRoast: Roast Team",
+        "icon": "$(organization)"
+      },
+      {
+        "command": "gitroast.toggleFileWatcher",
+        "title": "GitRoast: Toggle File Watcher",
+        "icon": "$(eye)"
       }
     ],
     "keybindings": [

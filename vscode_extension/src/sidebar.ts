@@ -97,6 +97,20 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
                         this._setLoading(false, null, null, err.message);
                     });
                     break;
+                case 'teamRoast':
+                    this._setLoading(true, `Team roasting ${message.usernames}...`);
+                    vscode.commands.executeCommand('gitroast.roastTeam', {
+                        usernames: message.usernames,
+                        personality: message.personality,
+                    }).then(() => {
+                        this._setLoading(false, null, 'Team Roasted');
+                    }, (err: Error) => {
+                        this._setLoading(false, null, null, err.message);
+                    });
+                    break;
+                case 'toggleWatcher':
+                    vscode.commands.executeCommand('gitroast.toggleFileWatcher');
+                    break;
             }
         });
     }
@@ -566,6 +580,23 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <button class="action-btn" id="clearBtn">&#x1f5d1; Clear</button>
   </div>
 
+  <hr class="divider" />
+
+  <div class="section">
+    <label class="section-label" for="teamInput">&#x1f465; Team Roast &mdash; Usernames</label>
+    <input type="text" id="teamInput" placeholder="e.g. alice,bob,charlie" autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="section">
+    <button class="btn btn-secondary" id="teamRoastBtn">&#x1f465; Roast The Team</button>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="action-row">
+    <button class="action-btn" id="watcherBtn">&#x1f441; File Watcher</button>
+    <button class="action-btn" id="chatBtn2" style="font-size: 11px">&#x1f517; Webhooks</button>
+  </div>
+
   <div class="status-card" id="statusArea">Ready to roast. Enter a username above.</div>
   <div class="last-action" id="lastAction"></div>
 
@@ -605,10 +636,22 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
         <div class="cap-icon">&#x1f4ac;</div>
         <div><div class="cap-name">AI Chat Panel</div><div class="cap-desc">Free-form chat with context from your session</div></div>
       </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f465;</div>
+        <div><div class="cap-name">Team Roast</div><div class="cap-desc">Compare multiple devs with leaderboard + group roast</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f441;</div>
+        <div><div class="cap-name">File Watcher</div><div class="cap-desc">Real-time micro-roasts when you save Python files</div></div>
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">&#x1f517;</div>
+        <div><div class="cap-name">Webhooks</div><div class="cap-desc">Send results to Slack, Discord, or any webhook</div></div>
+      </div>
     </div>
   </div>
 
-  <div class="footer">GitRoast v0.4.0 &nbsp;&bull;&nbsp; Free Forever &nbsp;&bull;&nbsp; MCP Powered</div>
+  <div class="footer">GitRoast v0.5.0 &nbsp;&bull;&nbsp; Free Forever &nbsp;&bull;&nbsp; MCP Powered</div>
 </div>
 
 <script>
@@ -627,7 +670,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   function setButtonsDisabled(disabled) {
     isLoading = disabled;
-    ['roastBtn','analyzeBtn','chatBtn','clearBtn', 'stressTestBtn', 'scaffoldBtn', 'researchBtn'].forEach(id => {
+    ['roastBtn','analyzeBtn','chatBtn','clearBtn', 'stressTestBtn', 'scaffoldBtn', 'researchBtn', 'teamRoastBtn', 'watcherBtn'].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) btn.disabled = disabled;
     });
@@ -693,6 +736,30 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
   document.getElementById('capHeader').addEventListener('click', () => {
     document.getElementById('capList').classList.toggle('open');
     document.getElementById('capToggle').classList.toggle('open');
+  });
+
+  // -- Phase 5: Team Roast --
+  document.getElementById('teamRoastBtn').addEventListener('click', () => {
+    const usernames = document.getElementById('teamInput').value.trim();
+    if (!usernames) { setStatus('<span class="highlight">Enter comma-separated usernames.</span>'); return; }
+    const personality = document.getElementById('personalitySelect').value;
+    setStatus(\`Team roasting <span class="highlight">\${usernames}</span><span class="loading-dots"></span>\`);
+    setButtonsDisabled(true);
+    vscode.postMessage({ command: 'teamRoast', usernames, personality });
+  });
+
+  document.getElementById('teamInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isLoading) document.getElementById('teamRoastBtn').click();
+  });
+
+  // -- Phase 5: File Watcher Toggle --
+  document.getElementById('watcherBtn').addEventListener('click', () => {
+    vscode.postMessage({ command: 'toggleWatcher' });
+  });
+
+  // -- Phase 5: Webhooks info --
+  document.getElementById('chatBtn2').addEventListener('click', () => {
+    setStatus('<span class="highlight">Webhooks:</span> Use the MCP tool <code>send_to_webhook</code> via CLI/Claude Desktop with your Slack or Discord webhook URL.');
   });
 
   window.addEventListener('message', (event) => {

@@ -768,6 +768,106 @@ export function activate(context: vscode.ExtensionContext): void {
         }
     );
 
+    // ----------------------------------------------------------------
+    // Command: Roast Team (Phase 5)
+    // ----------------------------------------------------------------
+    const roastTeamCmd = vscode.commands.registerCommand(
+        'gitroast.roastTeam',
+        async (args?: { usernames?: string; personality?: string }) => {
+            const client = mcpClient;
+            if (!client) { return; }
+
+            const usernames =
+                args?.usernames ||
+                (await vscode.window.showInputBox({
+                    prompt: 'Enter GitHub usernames (comma-separated) to team roast 👥',
+                    placeHolder: 'e.g. alice,bob,charlie',
+                }));
+            if (!usernames) { return; }
+
+            const personalityItems = [
+                { label: '🎤 Stand-up Comedian', value: 'comedian' },
+                { label: '🚀 YC Co-Founder', value: 'yc_founder' },
+                { label: '😤 Senior Developer', value: 'senior_dev' },
+                { label: '🧘 Zen Mentor', value: 'zen_mentor' },
+                { label: '👻 Anonymous Stranger', value: 'stranger' },
+            ];
+            const chosen = args?.personality
+                ? personalityItems.find((p) => p.value === args.personality) ?? personalityItems[0]
+                : await vscode.window.showQuickPick(personalityItems, {
+                    placeHolder: 'Choose your roast personality',
+                });
+            if (!chosen) { return; }
+            const personality = typeof chosen === 'string' ? chosen : (chosen as { value: string }).value;
+
+            setStatusBarActive(true);
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `👥 GitRoast is team-roasting...`,
+                    cancellable: false,
+                },
+                async () => {
+                    try {
+                        const result = await client.callTool('roast_team', {
+                            usernames,
+                            personality,
+                        });
+                        await openInDocument(result, `GitRoast Team Roast.md`);
+                    } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                    } finally {
+                        setStatusBarActive(false);
+                    }
+                }
+            );
+        }
+    );
+
+    // ----------------------------------------------------------------
+    // Command: Toggle File Watcher (Phase 5)
+    // ----------------------------------------------------------------
+    let fileWatcherActive = false;
+    const toggleFileWatcherCmd = vscode.commands.registerCommand(
+        'gitroast.toggleFileWatcher',
+        async () => {
+            const client = mcpClient;
+            if (!client) { return; }
+
+            if (fileWatcherActive) {
+                // Stop
+                try {
+                    const result = await client.callTool('watch_workspace', { action: 'stop' });
+                    fileWatcherActive = false;
+                    vscode.window.showInformationMessage(`👁️ ${result}`);
+                } catch (err: unknown) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                }
+            } else {
+                // Start — use the workspace folder
+                const folders = vscode.workspace.workspaceFolders;
+                if (!folders || folders.length === 0) {
+                    vscode.window.showErrorMessage('GitRoast: Open a workspace folder first.');
+                    return;
+                }
+                const watchPath = folders[0].uri.fsPath;
+                try {
+                    const result = await client.callTool('watch_workspace', {
+                        action: 'start',
+                        path: watchPath,
+                    });
+                    fileWatcherActive = true;
+                    vscode.window.showInformationMessage(`👁️ File Watcher enabled for: ${watchPath}`);
+                } catch (err: unknown) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    vscode.window.showErrorMessage(`GitRoast error: ${msg}`);
+                }
+            }
+        }
+    );
+
     context.subscriptions.push(
         openSidebarCmd,
         showWelcomeCmd,
@@ -779,6 +879,8 @@ export function activate(context: vscode.ExtensionContext): void {
         stressTestIdeaCmd,
         scaffoldProjectCmd,
         researchCompetitorsCmd,
+        roastTeamCmd,
+        toggleFileWatcherCmd,
     );
 }
 
