@@ -17,7 +17,7 @@ import ast
 import os
 import re
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Callable
 
 from pydantic import BaseModel, Field
@@ -96,7 +96,7 @@ class QuickAnalyzer:
             logger.warning(f"Could not read {file_path}: {exc}")
             return WatcherResult(
                 file_path=file_path,
-                analyzed_at=datetime.utcnow().isoformat(),
+                analyzed_at=datetime.now(timezone.utc).isoformat(),
             )
 
         lines = content.splitlines()
@@ -138,7 +138,7 @@ class QuickAnalyzer:
         return WatcherResult(
             file_path=file_path,
             issues=issues,
-            analyzed_at=datetime.utcnow().isoformat(),
+            analyzed_at=datetime.now(timezone.utc).isoformat(),
             lines_of_code=loc,
             overall_vibe=vibe,
         )
@@ -332,7 +332,7 @@ class FileWatcher:
         self.status = WatcherStatus(
             active=True,
             watch_path=watch_path,
-            started_at=datetime.utcnow().isoformat(),
+            started_at=datetime.now(timezone.utc).isoformat(),
         )
 
         logger.info(f"File watcher started: {watch_path}")
