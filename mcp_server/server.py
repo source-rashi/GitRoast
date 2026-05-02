@@ -1,7 +1,7 @@
 """
 GitRoast — MCP Server Entry Point
 =====================================
-Exposes 8 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
+Exposes 11 MCP tools to any compatible agent (Claude Desktop, Cursor, etc).
 Communicates via stdio — the standard MCP protocol.
 
 Tools:
@@ -13,6 +13,9 @@ Tools:
   6. set_personality         — Switch roast persona
   7. ask_followup            — Follow-up questions without re-fetch
   8. clear_session           — Clear cache and conversation history
+  9. roast_team              — Multi-profile team comparison + group roast (Phase 5, LIVE)
+ 10. watch_workspace         — Real-time file watcher with micro-roasts (Phase 5, LIVE)
+ 11. send_to_webhook         — Send results to Slack/Discord/webhook (Phase 5, LIVE)
 
 LLM: Groq (free, no credit card, llama-3.3-70b-versatile)
 """
@@ -36,6 +39,9 @@ from mcp_server.tools.scaffolder import ProjectScaffolder, ScaffoldResult
 from mcp_server.tools.competitor_researcher import CompetitorResearcher, CompetitorReport
 from mcp_server.personality.engine import PersonalityEngine
 from mcp_server.orchestrator import GitRoastOrchestrator
+from mcp_server.tools.team_roaster import TeamRoaster, TeamReport
+from mcp_server.tools.file_watcher import FileWatcher
+from mcp_server.tools.webhook_notifier import WebhookNotifier
 
 # ---------------------------------------------------------------------------
 # System prompts
@@ -392,6 +398,88 @@ async def handle_research_competitors(
 
 
 # ---------------------------------------------------------------------------
+# Phase 5 handlers
+# ---------------------------------------------------------------------------
+
+async def handle_roast_team(
+    arguments: dict,
+    team_roaster: TeamRoaster,
+    scraper: GitHubScraper,
+    orchestrator: GitRoastOrchestrator,
+    engine: PersonalityEngine,
+    groq_client: Groq,
+) -> str:
+    """Analyze multiple GitHub profiles and generate a team roast."""
+    raw_usernames: str = arguments.get("usernames", "")
+    personality: str = arguments.get("personality", "comedian")
+
+    if not raw_usernames.strip():
+        return "❌ Please provide comma-separated GitHub usernames. Example: `roast_team(usernames='alice,bob,charlie')`"
+
+    usernames = [u.strip() for u in raw_usernames.split(",") if u.strip()]
+    engine.validate_personality(personality)
+
+    try:
+        report = await team_roaster.analyze_team(
+            usernames, scraper, orchestrator.session_profiles
+        )
+        formatted = team_roaster.format_team_report(report, personality)
+        return engine.wrap_response(formatted, personality)
+    except Exception as exc:
+        logger.exception(f"Team roast failed: {exc}")
+        return f"❌ Team roast failed: {exc}"
+
+
+async def handle_watch_workspace(
+    arguments: dict,
+    file_watcher: FileWatcher,
+) -> str:
+    """Start, stop, or check status of the real-time file watcher."""
+    action: str = arguments.get("action", "status").lower()
+    watch_path: str = arguments.get("path", "").strip()
+
+    if action == "start":
+        if not watch_path:
+            return "❌ Please provide a directory path. Example: `watch_workspace(action='start', path='/path/to/project')`"
+        return file_watcher.start(watch_path)
+    elif action == "stop":
+        return file_watcher.stop()
+    elif action == "results":
+        return file_watcher.format_recent_results()
+    elif action == "analyze":
+        file_path = arguments.get("file", watch_path)
+        if not file_path:
+            return "❌ Provide a file path to analyze."
+        result = file_watcher.analyze_single_file(file_path)
+        return file_watcher.format_result(result)
+    else:
+        return file_watcher.get_status()
+
+
+async def handle_send_to_webhook(
+    arguments: dict,
+    webhook_notifier: WebhookNotifier,
+) -> str:
+    """Send content to a Slack, Discord, or generic webhook."""
+    webhook_url: str = arguments.get("webhook_url", "").strip()
+    content: str = arguments.get("content", "").strip()
+    title: str = arguments.get("title", "").strip() or None
+
+    if not webhook_url:
+        return (
+            "❌ Please provide a webhook URL.\n\n"
+            "**How to get one:**\n"
+            "- Slack: api.slack.com/messaging/webhooks\n"
+            "- Discord: Server Settings → Integrations → Webhooks"
+        )
+    if not content:
+        return "❌ Please provide content to send."
+
+    result = await webhook_notifier.send(webhook_url, content, title)
+    return webhook_notifier.format_send_result(result)
+
+
+# ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
 
@@ -418,6 +506,11 @@ async def main():
     debater = IdeaDebater(groq_client)
     scaffolder = ProjectScaffolder(groq_client, github_token=os.getenv("GITHUB_TOKEN"))
     researcher = CompetitorResearcher(groq_client, github_token=os.getenv("GITHUB_TOKEN", ""))
+
+    # Phase 5 components
+    team_roaster = TeamRoaster(groq_client)
+    file_watcher = FileWatcher()
+    webhook_notifier = WebhookNotifier()
 
     # Initialize MCP server
     server = Server("gitroast")
@@ -601,6 +694,83 @@ async def main():
                     "required": ["idea"],
                 },
             ),
+            types.Tool(
+                name="roast_team",
+                description=(
+                    "Analyze multiple GitHub developers simultaneously and generate a team roast. "
+                    "Compares commit frequency, code quality, documentation, testing, and more. "
+                    "Outputs a leaderboard, comparison table, and group roast."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "usernames": {
+                            "type": "string",
+                            "description": "Comma-separated GitHub usernames (2-6). Example: 'alice,bob,charlie'",
+                        },
+                        "personality": {
+                            "type": "string",
+                            "enum": ["comedian", "yc_founder", "senior_dev", "zen_mentor", "stranger"],
+                            "default": "comedian",
+                        },
+                    },
+                    "required": ["usernames"],
+                },
+            ),
+            types.Tool(
+                name="watch_workspace",
+                description=(
+                    "Control the real-time file watcher. Actions: 'start' (begin watching a directory), "
+                    "'stop' (stop watching), 'status' (current state), 'results' (recent analysis), "
+                    "'analyze' (analyze a single file on demand). "
+                    "When active, automatically analyzes Python files on save."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "action": {
+                            "type": "string",
+                            "enum": ["start", "stop", "status", "results", "analyze"],
+                            "default": "status",
+                            "description": "The watcher action to perform",
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "Directory path to watch (required for 'start') or file path (for 'analyze')",
+                        },
+                        "file": {
+                            "type": "string",
+                            "description": "File path for 'analyze' action",
+                        },
+                    },
+                },
+            ),
+            types.Tool(
+                name="send_to_webhook",
+                description=(
+                    "Send GitRoast results to a Slack, Discord, or any webhook URL. "
+                    "Auto-detects the platform and formats the content accordingly. "
+                    "Supports Slack Block Kit, Discord Embeds, and generic JSON."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "webhook_url": {
+                            "type": "string",
+                            "description": "The webhook URL to send to",
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The Markdown content to send",
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "Optional title override (auto-detected from content if not provided)",
+                        },
+                    },
+                    "required": ["webhook_url", "content"],
+                },
+            ),
         ]
 
     # ------------------------------------------------------------------
@@ -636,6 +806,14 @@ async def main():
                 result = await handle_research_competitors(
                     arguments, researcher, engine, groq_client
                 )
+            elif name == "roast_team":
+                result = await handle_roast_team(
+                    arguments, team_roaster, scraper, orchestrator, engine, groq_client
+                )
+            elif name == "watch_workspace":
+                result = await handle_watch_workspace(arguments, file_watcher)
+            elif name == "send_to_webhook":
+                result = await handle_send_to_webhook(arguments, webhook_notifier)
             else:
                 result = f"Unknown tool: {name}"
         except Exception as exc:
@@ -648,10 +826,10 @@ async def main():
     # Startup banner
     # ------------------------------------------------------------------
     console.print(
-        "\n[bold red]GitRoast MCP Server v0.4.0 - Online[/bold red]\n"
+        "\n[bold red]GitRoast MCP Server v0.5.0 - Online[/bold red]\n"
         "[dim]LLM: Groq (llama-3.3-70b-versatile) - Free tier[/dim]\n"
-        "[bold green]Phase 4 LIVE: Competitor Researcher + VS Code Polish[/bold green]\n"
-        "[dim]8 tools registered. Waiting for connections via stdio...[/dim]\n"
+        "[bold green]Phase 5 LIVE: Team Roast + File Watcher + Webhooks[/bold green]\n"
+        "[dim]11 tools registered. Waiting for connections via stdio...[/dim]\n"
     )
 
     # ------------------------------------------------------------------
