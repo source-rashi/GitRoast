@@ -406,25 +406,31 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       margin-bottom: 14px;
     }
     .action-btn {
-      padding: 7px 10px;
+      padding: 8px 10px;
       border-radius: 6px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      background: var(--input-bg);
-      color: var(--fg);
+      background: var(--btn2-bg);
+      color: var(--btn2-fg);
       border: 1px solid var(--border);
       transition: all 0.2s;
       text-align: center;
+      letter-spacing: 0.2px;
     }
     .action-btn:hover {
       border-color: var(--accent);
     }
     .action-btn.active {
       background: var(--accent);
-      color: #000;
+      color: #fff;
       border-color: var(--accent);
       font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,119,182,0.35);
+    }
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     /* ---- STATUS ---- */
@@ -507,11 +513,13 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       flex-shrink: 0;
       width: 24px; height: 24px;
       border-radius: 6px;
-      background: rgba(139,92,246,0.12);
+      background: rgba(0,119,182,0.12);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
     }
     .cap-name { font-size: 12px; font-weight: 500; color: var(--fg); }
     .cap-desc { font-size: 10px; color: var(--fg-dim); margin-top: 1px; }
@@ -531,7 +539,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 <div class="container">
   <div class="header">
     <div class="brand">
-      <div class="brand-icon">&#x1f525;</div>
+      <div class="brand-icon">GR</div>
       <span class="brand-text">GitRoast</span>
     </div>
     <div class="tagline">AI-Powered Developer Intelligence</div>
@@ -546,16 +554,16 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <label class="section-label" for="personalitySelect">Roast Personality</label>
     <div class="select-wrapper">
       <select id="personalitySelect">
-        <option value="comedian">&#x1f3a4; Stand-up Comedian</option>
-        <option value="yc_founder">&#x1f680; YC Co-Founder</option>
-        <option value="senior_dev">&#x1f624; Senior Developer</option>
-        <option value="zen_mentor">&#x1f9d8; Zen Mentor</option>
-        <option value="stranger">&#x1f47b; Anonymous Stranger</option>
+        <option value="comedian">Comedian — Brutal Roast Energy</option>
+        <option value="yc_founder">YC Founder — Startup Intensity</option>
+        <option value="senior_dev">Senior Dev — Tired Veteran</option>
+        <option value="zen_mentor">Zen Mentor — Tough Love</option>
+        <option value="stranger">Stranger — Unfiltered Chaos</option>
       </select>
     </div>
   </div>
   <div class="section">
-    <button class="btn btn-primary" id="roastBtn">&#x25c8; Roast This Dev</button>
+    <button class="btn btn-primary" id="roastBtn">Roast This Dev</button>
     <div class="shortcut-hint">Or press <kbd>Ctrl+Shift+G</kbd></div>
   </div>
 
@@ -566,7 +574,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="number" id="reposInput" min="1" max="5" value="3" />
   </div>
   <div class="section">
-    <button class="btn btn-secondary" id="analyzeBtn">&#x25c7; Analyze Code</button>
+    <button class="btn btn-secondary" id="analyzeBtn">Analyze Code</button>
   </div>
 
   <div class="section">
@@ -574,33 +582,33 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="text" id="ideaInput" placeholder="e.g. VS Code extension for..." autocomplete="off" spellcheck="false" />
   </div>
   <div class="action-row" style="grid-template-columns: 1fr 1fr 1fr;">
-    <button class="action-btn" id="stressTestBtn" style="font-size: 10px;">&#x25b7; Debate</button>
-    <button class="action-btn" id="scaffoldBtn" style="font-size: 10px;">&#x25b3; Scaffold</button>
-    <button class="action-btn" id="researchBtn" style="font-size: 10px;">&#x25ef; Research</button>
+    <button class="action-btn" id="stressTestBtn">Debate</button>
+    <button class="action-btn" id="scaffoldBtn">Scaffold</button>
+    <button class="action-btn" id="researchBtn">Research</button>
   </div>
 
   <hr class="divider" />
 
   <div class="action-row">
-    <button class="action-btn" id="chatBtn">&#x25c9; Chat</button>
-    <button class="action-btn" id="clearBtn">&#x25cb; Clear</button>
+    <button class="action-btn" id="chatBtn">Chat</button>
+    <button class="action-btn" id="clearBtn">Clear Session</button>
   </div>
 
   <hr class="divider" />
 
   <div class="section">
-    <label class="section-label" for="teamInput">&#x1f465; Team Roast &mdash; Usernames</label>
+    <label class="section-label" for="teamInput">Team Roast &mdash; Usernames</label>
     <input type="text" id="teamInput" placeholder="e.g. alice,bob,charlie" autocomplete="off" spellcheck="false" />
   </div>
   <div class="section">
-    <button class="btn btn-secondary" id="teamRoastBtn">&#x25cd; Roast The Team</button>
+    <button class="btn btn-secondary" id="teamRoastBtn">Roast The Team</button>
   </div>
 
   <hr class="divider" />
 
   <div class="action-row">
-    <button class="action-btn" id="watcherBtn">&#x29bf; File Watcher</button>
-    <button class="action-btn" id="chatBtn2" style="font-size: 11px">&#x29c9; Webhooks</button>
+    <button class="action-btn" id="watcherBtn">File Watcher</button>
+    <button class="action-btn" id="chatBtn2">Webhooks</button>
   </div>
 
   <div class="status-card" id="statusArea">Ready to roast. Enter a username above.</div>
@@ -615,43 +623,43 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     </div>
     <div class="cap-list open" id="capList">
       <div class="cap-item">
-        <div class="cap-icon">&#x25c8;</div>
+        <div class="cap-icon">PR</div>
         <div><div class="cap-name">Profile Roast</div><div class="cap-desc">Full roast from real commits, PRs &amp; issues</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25c7;</div>
+        <div class="cap-icon">CQ</div>
         <div><div class="cap-name">Code Quality</div><div class="cap-desc">pylint + radon + AST analysis across repos</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25b7;</div>
+        <div class="cap-icon">DB</div>
         <div><div class="cap-name">Debate Ideas</div><div class="cap-desc">3-agent debate: Believer &#x2022; Destroyer &#x2022; Judge</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25b3;</div>
+        <div class="cap-icon">ST</div>
         <div><div class="cap-name">Idea Stress Test</div><div class="cap-desc">Structured evaluation across multiple AI agents</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25ef;</div>
+        <div class="cap-icon">SC</div>
         <div><div class="cap-name">Scaffold Projects</div><div class="cap-desc">Folder structure + tech stack + 4-week roadmap</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25c9;</div>
+        <div class="cap-icon">RC</div>
         <div><div class="cap-name">Research Competitors</div><div class="cap-desc">GitHub intelligence + differentiation wedge</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25cb;</div>
+        <div class="cap-icon">AI</div>
         <div><div class="cap-name">AI Chat Panel</div><div class="cap-desc">Free-form chat with context from your session</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x25cd;</div>
+        <div class="cap-icon">TR</div>
         <div><div class="cap-name">Team Roast</div><div class="cap-desc">Compare multiple devs with leaderboard + group roast</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x29bf;</div>
+        <div class="cap-icon">FW</div>
         <div><div class="cap-name">File Watcher</div><div class="cap-desc">Real-time micro-roasts when you save Python files</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x29c9;</div>
+        <div class="cap-icon">WH</div>
         <div><div class="cap-name">Webhooks</div><div class="cap-desc">Send results to Slack, Discord, or any webhook</div></div>
       </div>
     </div>
