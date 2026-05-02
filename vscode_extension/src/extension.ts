@@ -98,7 +98,7 @@ export class GitRoastMCPClient {
                 params: {
                     protocolVersion: '2024-11-05',
                     capabilities: {},
-                    clientInfo: { name: 'gitroast-vscode', version: '0.4.0' }
+                    clientInfo: { name: 'gitroast-vscode', version: '0.5.0' }
                 }
             });
 
