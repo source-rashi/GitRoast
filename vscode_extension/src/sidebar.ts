@@ -175,8 +175,8 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       --focus: var(--vscode-focusBorder, #f9e2af);
       --btn2-bg: var(--vscode-button-secondaryBackground, #313244);
       --btn2-fg: var(--vscode-button-secondaryForeground, #cdd6f4);
-      --accent: #8b5cf6;
-      --accent2: #c084fc;
+      --accent: #48cae4;
+      --accent2: #b5e2fa;
     }
 
     body {
@@ -228,7 +228,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      box-shadow: 0 2px 8px rgba(139,92,246,0.30);
+      box-shadow: 0 2px 8px rgba(72,202,228,0.30);
     }
     .brand-text {
       font-size: 18px;
@@ -297,7 +297,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
     input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(139,92,246,0.20);
+      box-shadow: 0 0 0 2px rgba(72,202,228,0.20);
     }
 
     /* ---- CUSTOM SELECT ---- */
@@ -331,7 +331,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
     select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(139,92,246,0.20);
+      box-shadow: 0 0 0 2px rgba(72,202,228,0.20);
     }
     select option {
       background: var(--input-bg);
@@ -354,12 +354,12 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       transition: all 0.2s ease;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: linear-gradient(135deg, var(--accent), #00b4d8);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(139,92,246,0.35);
+      box-shadow: 0 2px 8px rgba(72,202,228,0.35);
     }
     .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(139,92,246,0.50);
+      box-shadow: 0 4px 16px rgba(72,202,228,0.50);
       transform: translateY(-1px);
     }
     .btn-primary:active { transform: translateY(0); }
@@ -419,6 +419,12 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
     .action-btn:hover {
       border-color: var(--accent);
+    }
+    .action-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 700;
     }
 
     /* ---- STATUS ---- */
@@ -754,6 +760,8 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   // -- Phase 5: File Watcher Toggle --
   document.getElementById('watcherBtn').addEventListener('click', () => {
+    const btn = document.getElementById('watcherBtn');
+    btn.classList.toggle('active');
     vscode.postMessage({ command: 'toggleWatcher' });
   });
 
