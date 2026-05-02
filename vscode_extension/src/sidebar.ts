@@ -175,8 +175,8 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       --focus: var(--vscode-focusBorder, #f9e2af);
       --btn2-bg: var(--vscode-button-secondaryBackground, #313244);
       --btn2-fg: var(--vscode-button-secondaryForeground, #cdd6f4);
-      --accent: #48cae4;
-      --accent2: #b5e2fa;
+      --accent: #0077b6;
+      --accent2: #00b4d8;
     }
 
     body {
@@ -228,7 +228,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      box-shadow: 0 2px 8px rgba(72,202,228,0.30);
+      box-shadow: 0 2px 8px rgba(0,119,182,0.30);
     }
     .brand-text {
       font-size: 18px;
@@ -297,7 +297,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
     input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(72,202,228,0.20);
+      box-shadow: 0 0 0 2px rgba(0,119,182,0.20);
     }
 
     /* ---- CUSTOM SELECT ---- */
@@ -331,7 +331,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     }
     select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(72,202,228,0.20);
+      box-shadow: 0 0 0 2px rgba(0,119,182,0.20);
     }
     select option {
       background: var(--input-bg);
@@ -354,12 +354,12 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
       transition: all 0.2s ease;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #00b4d8);
+      background: linear-gradient(135deg, var(--accent), #023e8a);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(72,202,228,0.35);
+      box-shadow: 0 2px 8px rgba(0,119,182,0.35);
     }
     .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(72,202,228,0.50);
+      box-shadow: 0 4px 16px rgba(0,119,182,0.50);
       transform: translateY(-1px);
     }
     .btn-primary:active { transform: translateY(0); }
@@ -555,7 +555,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     </div>
   </div>
   <div class="section">
-    <button class="btn btn-primary" id="roastBtn">&#x1f525; Roast This Dev</button>
+    <button class="btn btn-primary" id="roastBtn">&#x25c8; Roast This Dev</button>
     <div class="shortcut-hint">Or press <kbd>Ctrl+Shift+G</kbd></div>
   </div>
 
@@ -566,7 +566,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="number" id="reposInput" min="1" max="5" value="3" />
   </div>
   <div class="section">
-    <button class="btn btn-secondary" id="analyzeBtn">&#x1f52c; Analyze Code</button>
+    <button class="btn btn-secondary" id="analyzeBtn">&#x25c7; Analyze Code</button>
   </div>
 
   <div class="section">
@@ -574,16 +574,16 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="text" id="ideaInput" placeholder="e.g. VS Code extension for..." autocomplete="off" spellcheck="false" />
   </div>
   <div class="action-row" style="grid-template-columns: 1fr 1fr 1fr;">
-    <button class="action-btn" id="stressTestBtn" style="font-size: 10px;">&#x2696;&#xfe0f; Debate</button>
-    <button class="action-btn" id="scaffoldBtn" style="font-size: 10px;">&#x1f3d7; Scaffold</button>
-    <button class="action-btn" id="researchBtn" style="font-size: 10px;">&#x1f575; Research</button>
+    <button class="action-btn" id="stressTestBtn" style="font-size: 10px;">&#x25b7; Debate</button>
+    <button class="action-btn" id="scaffoldBtn" style="font-size: 10px;">&#x25b3; Scaffold</button>
+    <button class="action-btn" id="researchBtn" style="font-size: 10px;">&#x25ef; Research</button>
   </div>
 
   <hr class="divider" />
 
   <div class="action-row">
-    <button class="action-btn" id="chatBtn">&#x1f4ac; Chat</button>
-    <button class="action-btn" id="clearBtn">&#x1f5d1; Clear</button>
+    <button class="action-btn" id="chatBtn">&#x25c9; Chat</button>
+    <button class="action-btn" id="clearBtn">&#x25cb; Clear</button>
   </div>
 
   <hr class="divider" />
@@ -593,14 +593,14 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     <input type="text" id="teamInput" placeholder="e.g. alice,bob,charlie" autocomplete="off" spellcheck="false" />
   </div>
   <div class="section">
-    <button class="btn btn-secondary" id="teamRoastBtn">&#x1f465; Roast The Team</button>
+    <button class="btn btn-secondary" id="teamRoastBtn">&#x25cd; Roast The Team</button>
   </div>
 
   <hr class="divider" />
 
   <div class="action-row">
-    <button class="action-btn" id="watcherBtn">&#x1f441; File Watcher</button>
-    <button class="action-btn" id="chatBtn2" style="font-size: 11px">&#x1f517; Webhooks</button>
+    <button class="action-btn" id="watcherBtn">&#x29bf; File Watcher</button>
+    <button class="action-btn" id="chatBtn2" style="font-size: 11px">&#x29c9; Webhooks</button>
   </div>
 
   <div class="status-card" id="statusArea">Ready to roast. Enter a username above.</div>
@@ -615,43 +615,43 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     </div>
     <div class="cap-list open" id="capList">
       <div class="cap-item">
-        <div class="cap-icon">&#x1f525;</div>
+        <div class="cap-icon">&#x25c8;</div>
         <div><div class="cap-name">Profile Roast</div><div class="cap-desc">Full roast from real commits, PRs &amp; issues</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f52c;</div>
+        <div class="cap-icon">&#x25c7;</div>
         <div><div class="cap-name">Code Quality</div><div class="cap-desc">pylint + radon + AST analysis across repos</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f9e0;</div>
+        <div class="cap-icon">&#x25b7;</div>
         <div><div class="cap-name">Debate Ideas</div><div class="cap-desc">3-agent debate: Believer &#x2022; Destroyer &#x2022; Judge</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x2696;&#xfe0f;</div>
+        <div class="cap-icon">&#x25b3;</div>
         <div><div class="cap-name">Idea Stress Test</div><div class="cap-desc">Structured evaluation across multiple AI agents</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f3d7;</div>
+        <div class="cap-icon">&#x25ef;</div>
         <div><div class="cap-name">Scaffold Projects</div><div class="cap-desc">Folder structure + tech stack + 4-week roadmap</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f575;</div>
+        <div class="cap-icon">&#x25c9;</div>
         <div><div class="cap-name">Research Competitors</div><div class="cap-desc">GitHub intelligence + differentiation wedge</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f4ac;</div>
+        <div class="cap-icon">&#x25cb;</div>
         <div><div class="cap-name">AI Chat Panel</div><div class="cap-desc">Free-form chat with context from your session</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f465;</div>
+        <div class="cap-icon">&#x25cd;</div>
         <div><div class="cap-name">Team Roast</div><div class="cap-desc">Compare multiple devs with leaderboard + group roast</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f441;</div>
+        <div class="cap-icon">&#x29bf;</div>
         <div><div class="cap-name">File Watcher</div><div class="cap-desc">Real-time micro-roasts when you save Python files</div></div>
       </div>
       <div class="cap-item">
-        <div class="cap-icon">&#x1f517;</div>
+        <div class="cap-icon">&#x29c9;</div>
         <div><div class="cap-name">Webhooks</div><div class="cap-desc">Send results to Slack, Discord, or any webhook</div></div>
       </div>
     </div>
@@ -674,11 +674,15 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
 
   function setLastAction(text) { document.getElementById('lastAction').textContent = text; }
 
-  function setButtonsDisabled(disabled) {
+  function setButtonsDisabled(disabled, activeId) {
     isLoading = disabled;
     ['roastBtn','analyzeBtn','chatBtn','clearBtn', 'stressTestBtn', 'scaffoldBtn', 'researchBtn', 'teamRoastBtn', 'watcherBtn'].forEach(id => {
       const btn = document.getElementById(id);
-      if (btn) btn.disabled = disabled;
+      if (btn) {
+        btn.disabled = disabled;
+        if (id === activeId && disabled) btn.classList.add('active');
+        else if (!disabled && id !== 'watcherBtn') btn.classList.remove('active');
+      }
     });
   }
 
@@ -687,7 +691,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!username) { setStatus('<span class="highlight">Please enter a GitHub username first.</span>'); return; }
     const personality = document.getElementById('personalitySelect').value;
     setStatus(\`<span class="highlight">Roasting \${username}</span> as <span class="highlight">\${personality}</span><span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'roastBtn');
     vscode.postMessage({ command: 'roast', username, personality });
   });
 
@@ -696,7 +700,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!username) { setStatus('<span class="highlight">Please enter a GitHub username first.</span>'); return; }
     const maxRepos = document.getElementById('reposInput').value;
     setStatus(\`Analyzing code for <span class="highlight">\${username}</span> (\${maxRepos} repos)<span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'analyzeBtn');
     vscode.postMessage({ command: 'analyze', username, maxRepos });
   });
 
@@ -713,7 +717,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
     const personality = document.getElementById('personalitySelect').value;
     setStatus(\`Debating idea...<span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'stressTestBtn');
     vscode.postMessage({ command: 'stressTest', idea, personality });
   });
 
@@ -722,7 +726,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
     const personality = document.getElementById('personalitySelect').value;
     setStatus(\`Scaffolding project...<span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'scaffoldBtn');
     vscode.postMessage({ command: 'scaffold', idea, personality });
   });
 
@@ -731,7 +735,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!idea) { setStatus('<span class="highlight">Please enter an idea first.</span>'); return; }
     const personality = document.getElementById('personalitySelect').value;
     setStatus(\`Researching competitors...<span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'researchBtn');
     vscode.postMessage({ command: 'research', idea, personality });
   });
 
@@ -750,7 +754,7 @@ export class GitRoastSidebarProvider implements vscode.WebviewViewProvider {
     if (!usernames) { setStatus('<span class="highlight">Enter comma-separated usernames.</span>'); return; }
     const personality = document.getElementById('personalitySelect').value;
     setStatus(\`Team roasting <span class="highlight">\${usernames}</span><span class="loading-dots"></span>\`);
-    setButtonsDisabled(true);
+    setButtonsDisabled(true, 'teamRoastBtn');
     vscode.postMessage({ command: 'teamRoast', usernames, personality });
   });
 
